@@ -636,8 +636,15 @@ function togglePraiseExpand(){
 }
 
 
-// ===== AUTH =====
+// ===== AUTH (localStorage 기반) =====
 var authMode='login', currentUser=null, userStatuses={};
+
+function lsGet(key){try{return localStorage.getItem(key);}catch(e){return null;}}
+function lsSet(key,val){try{localStorage.setItem(key,val);}catch(e){}}
+function getUsers(){try{return JSON.parse(lsGet('bm_users')||'{}');}catch(e){return {};}}
+function saveUsers(u){lsSet('bm_users',JSON.stringify(u));}
+function getStatusData(name){try{return JSON.parse(lsGet('bm_status_'+name)||'{}');}catch(e){return {};}}
+function saveStatusData(name,data){lsSet('bm_status_'+name,JSON.stringify(data));}
 
 function toggleAuthMode(){
   authMode=authMode==='login'?'register':'login';
@@ -653,19 +660,18 @@ function toggleAuthMode(){
 
 function showAuthErr(msg){var e=document.getElementById('auth-err');e.textContent=msg;e.style.display='block';}
 
-async function doAuth(){
+function doAuth(){
   var name=document.getElementById('auth-name').value.trim();
   var pw=document.getElementById('auth-pw').value.trim();
   if(!name){showAuthErr('이름을 입력하세요.');return;}
   if(!/^\d{4}$/.test(pw)){showAuthErr('비밀번호는 숫자 4자리여야 합니다.');return;}
-  var users={};
-  try{var r=await window.storage.get('users');if(r)users=JSON.parse(r.value);}catch(e){}
+  var users=getUsers();
   if(authMode==='register'){
     var pw2=document.getElementById('auth-pw2').value.trim();
     if(pw!==pw2){showAuthErr('비밀번호가 일치하지 않습니다.');return;}
     if(users[name]){showAuthErr('이미 존재하는 이름입니다.');return;}
     users[name]=pw;
-    try{await window.storage.set('users',JSON.stringify(users));}catch(e){}
+    saveUsers(users);
     loginUser(name);
   } else {
     if(!users[name]){showAuthErr('등록되지 않은 이름입니다.');return;}
@@ -674,9 +680,10 @@ async function doAuth(){
   }
 }
 
-async function loginUser(name){
+function loginUser(name){
   currentUser=name;
-  try{var r=await window.storage.get('status_'+name);userStatuses=r?JSON.parse(r.value):{};}catch(e){userStatuses={};}
+  userStatuses=getStatusData(name);
+  lsSet('bm_last_user', name);
   document.getElementById('auth-overlay').style.display='none';
   document.getElementById('user-bar').style.display='flex';
   document.getElementById('user-avatar').textContent=name.charAt(0);
@@ -712,14 +719,20 @@ function renderProgressSummary(){
     +'<div class="stat-card"><div class="stat-num" style="color:#639922">'+done+'</div><div class="stat-label">암송 완료</div></div>';
 }
 
-async function setStatus(idx,status){
+function setStatus(idx,status){
   if(!currentUser)return;
   if(userStatuses[idx]===status)delete userStatuses[idx];
   else userStatuses[idx]=status;
-  try{await window.storage.set('status_'+currentUser,JSON.stringify(userStatuses));}catch(e){}
+  saveStatusData(currentUser,userStatuses);
   updateUserStats();
   renderAll();renderCategory();
 }
+
+// 마지막 로그인 사용자 자동 입력
+window.addEventListener('DOMContentLoaded',function(){
+  var last=lsGet('bm_last_user');
+  if(last) document.getElementById('auth-name').value=last;
+});
 
 function getStatusClass(idx){
   var s=userStatuses[idx];
