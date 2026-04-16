@@ -122,9 +122,9 @@ h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8p
     <div class="gp-sub" id="gp-sub">재생 버튼을 눌러 시작하세요</div>
   </div>
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-    <button class="speed-btn active" onclick="setSpeed(0.8,this)">0.8x</button>
-    <button class="speed-btn" onclick="setSpeed(1,this)">1x</button>
-    <button class="speed-btn" onclick="setSpeed(1.2,this)">1.2x</button>
+    <button class="speed-btn" onclick="setSpeed(0.8,this)">0.8x</button>
+    <button class="speed-btn active" onclick="setSpeed(1.2,this)">1.2x</button>
+    <button class="speed-btn" onclick="setSpeed(1.5,this)">1.5x</button>
   </div>
   <div class="gp-counter" id="gp-counter">0 / 64</div>
 </div>
@@ -244,7 +244,7 @@ const progClass={1:'prog-1',2:'prog-2',3:'prog-3'};
 let currentLang='ko',allFilter='all';
 let flashFilter='all',flashList=[...verses],flashIdx=0,flashRevealed=false;
 let quizList=[],quizIdx=0,quizScore=0,currentBlankIdx=0,filledAnswers=[];
-let synth=window.speechSynthesis,globalPlaying=false,globalIdx=0,globalSpeed=0.8,loopVerseIdx=-1;
+let synth=window.speechSynthesis,globalPlaying=false,globalIdx=0,globalSpeed=1.2,loopVerseIdx=-1;
 let voices=[];
 function loadVoices(){voices=synth.getVoices();}
 loadVoices();
@@ -256,31 +256,36 @@ function getLangBadge(){if(currentLang==='ko')return '';return `<span class="ver
 
 function getTTSRef(v){
   const isKo=currentLang==='ko';
-  const raw=isKo?v.koRef:v.ref;
-  const colonIdx=raw.indexOf(':');
-  if(colonIdx===-1)return raw;
-  const bookPart=raw.slice(0,colonIdx).trim();
-  const versPart=raw.slice(colonIdx+1).trim();
   if(isKo){
-    const dashIdx=versPart.indexOf('-');
+    const koRef=v.koRef;
+    const spaceIdx=koRef.lastIndexOf(' ');
+    const bookName=koRef.slice(0,spaceIdx);
+    const chapVerse=koRef.slice(spaceIdx+1);
+    const colonIdx=chapVerse.indexOf(':');
+    const chap=chapVerse.slice(0,colonIdx);
+    const versePart=chapVerse.slice(colonIdx+1);
+    const dashIdx=versePart.indexOf('-');
     if(dashIdx!==-1){
-      const start=versPart.slice(0,dashIdx).trim();
-      const chVer=start.split('.');
-      if(chVer.length===2){const endNum=versPart.slice(dashIdx+1).trim();return `${bookPart} ${chVer[0]}장 ${chVer[1]}절에서 ${endNum}절`;}
+      const vStart=versePart.slice(0,dashIdx);
+      const vEnd=versePart.slice(dashIdx+1);
+      return `${bookName} ${chap}장 ${vStart}절부터 ${vEnd}절`;
     }
-    const parts=versPart.split('.');
-    if(parts.length===2)return `${bookPart} ${parts[0]}장 ${parts[1]}절`;
-    return raw;
+    return `${bookName} ${chap}장 ${versePart}절`;
   } else {
-    const dashIdx=versPart.indexOf('-');
+    const ref=v.ref;
+    const colonIdx=ref.indexOf(':');
+    const bookChap=ref.slice(0,colonIdx);
+    const versePart=ref.slice(colonIdx+1);
+    const lastSpace=bookChap.lastIndexOf(' ');
+    const bookName=bookChap.slice(0,lastSpace);
+    const chap=bookChap.slice(lastSpace+1);
+    const dashIdx=versePart.indexOf('-');
     if(dashIdx!==-1){
-      const start=versPart.slice(0,dashIdx).trim();
-      const chVer=start.split(':');
-      if(chVer.length===2){const endNum=versPart.slice(dashIdx+1).trim();return `${bookPart}, Chapter ${chVer[0]}, verse ${chVer[1]} through ${endNum}`;}
+      const vStart=versePart.slice(0,dashIdx);
+      const vEnd=versePart.slice(dashIdx+1);
+      return `${bookName}, chapter ${chap}, verse ${vStart} through ${vEnd}`;
     }
-    const parts=versPart.split(':');
-    if(parts.length===2)return `${bookPart}, Chapter ${parts[0]}, verse ${parts[1]}`;
-    return raw;
+    return `${bookName}, chapter ${chap}, verse ${versePart}`;
   }
 }
 
