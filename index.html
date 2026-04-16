@@ -84,6 +84,14 @@ h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8p
 .btn-primary{padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:#f0f0eb;cursor:pointer;font-size:14px;color:#1a1a1a;margin-top:12px;font-family:inherit}
 .correct-msg{font-size:13px;margin-top:8px;height:20px}
 @media(max-width:600px){.top-bar{flex-direction:column;align-items:flex-start}.app{padding:1rem .75rem 3rem}}
+
+.praise-bar{background:var(--color-background-secondary,#f0f0eb);border:1px solid #e0e0da;border-radius:12px;padding:10px 14px;margin-bottom:.75rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.praise-title{font-size:12px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.praise-toggle{padding:5px 14px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;color:#1a1a1a;white-space:nowrap;font-family:inherit}
+.praise-toggle:hover{background:#e8e8e3}
+.praise-toggle.playing{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}
+.praise-frame{width:100%;aspect-ratio:16/9;border-radius:10px;border:none;display:none;margin-top:8px}
+.praise-frame.visible{display:block}
 </style>
 </head>
 <body>
@@ -104,6 +112,19 @@ h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8p
     <button class="lang-btn" id="btn-niv" onclick="switchLang('niv')">NIV</button>
   </div>
 </div>
+
+<div class="praise-bar" id="praise-bar">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M9 18V5l12-2v13" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="#888" stroke-width="1.8"/><circle cx="18" cy="16" r="3" stroke="#888" stroke-width="1.8"/></svg>
+  <span class="praise-title">찬양 듣기 — 24시간 CCM</span>
+  <button class="praise-toggle" id="praise-btn" onclick="togglePraise()">재생</button>
+  <button onclick="togglePraiseExpand()" style="padding:5px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:11px;color:#888;font-family:inherit" id="praise-expand-btn">화면 보기</button>
+</div>
+<iframe id="praise-iframe"
+  class="praise-frame"
+  src=""
+  allow="autoplay; encrypted-media"
+  allowfullscreen
+  title="찬양 스트리밍"></iframe>
 
 <div class="global-player">
   <div class="gp-controls">
@@ -254,6 +275,22 @@ function getRef(v){return currentLang==='ko'?v.koRef:v.ref;}
 function getText(v){if(currentLang==='ko')return v.ko;if(currentLang==='nirv')return nirv[v.ref]||v.ko;return niv[v.ref]||v.ko;}
 function getLangBadge(){if(currentLang==='ko')return '';return `<span class="ver-badge">${currentLang.toUpperCase()}</span>`;}
 
+function toSinoKorean(n){
+  const num=parseInt(n,10);
+  if(isNaN(num))return n;
+  if(num===0)return '영';
+  const units=['','일','이','삼','사','오','육','칠','팔','구'];
+  const places=['','십','백','천'];
+  let result='';
+  const digits=String(num).split('').reverse();
+  for(let i=digits.length-1;i>=0;i--){
+    const d=parseInt(digits[i]);
+    if(d===0)continue;
+    const unit=(d===1&&i>0)?'':units[d];
+    result+=unit+places[i];
+  }
+  return result||'영';
+}
 function getTTSRef(v){
   const isKo=currentLang==='ko';
   if(isKo){
@@ -264,13 +301,14 @@ function getTTSRef(v){
     const colonIdx=chapVerse.indexOf(':');
     const chap=chapVerse.slice(0,colonIdx);
     const versePart=chapVerse.slice(colonIdx+1);
+    const chapKo=toSinoKorean(chap);
     const dashIdx=versePart.indexOf('-');
     if(dashIdx!==-1){
-      const vStart=versePart.slice(0,dashIdx);
-      const vEnd=versePart.slice(dashIdx+1);
-      return `${bookName} ${chap}장 ${vStart}절부터 ${vEnd}절`;
+      const vStart=toSinoKorean(versePart.slice(0,dashIdx));
+      const vEnd=toSinoKorean(versePart.slice(dashIdx+1));
+      return `${bookName} ${chapKo}장 ${vStart}절부터 ${vEnd}절`;
     }
-    return `${bookName} ${chap}장 ${versePart}절`;
+    return `${bookName} ${chapKo}장 ${toSinoKorean(versePart)}절`;
   } else {
     const ref=v.ref;
     const colonIdx=ref.indexOf(':');
@@ -492,6 +530,38 @@ function showPage(name,e){
   if(name==='quiz'&&quizList.length===0)initQuiz();
 }
 renderAll();renderCategory();renderFlash();
+
+var praiseOn=false, praiseExpanded=false;
+const PRAISE_SRC='https://www.youtube.com/embed/jydGb5W13Y4?autoplay=1&mute=0';
+
+function togglePraise(){
+  praiseOn=!praiseOn;
+  const iframe=document.getElementById('praise-iframe');
+  const btn=document.getElementById('praise-btn');
+  if(praiseOn){
+    iframe.src=PRAISE_SRC;
+    btn.textContent='정지';
+    btn.classList.add('playing');
+    if(praiseExpanded) iframe.classList.add('visible');
+  } else {
+    iframe.src='';
+    btn.textContent='재생';
+    btn.classList.remove('playing');
+    iframe.classList.remove('visible');
+    praiseExpanded=false;
+    document.getElementById('praise-expand-btn').textContent='화면 보기';
+  }
+}
+
+function togglePraiseExpand(){
+  const iframe=document.getElementById('praise-iframe');
+  const btn=document.getElementById('praise-expand-btn');
+  if(!praiseOn){togglePraise();return;}
+  praiseExpanded=!praiseExpanded;
+  iframe.classList.toggle('visible', praiseExpanded);
+  btn.textContent=praiseExpanded?'화면 닫기':'화면 보기';
+}
+
 </script>
 </body>
 </html>
