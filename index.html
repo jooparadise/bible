@@ -92,6 +92,43 @@ h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8p
 .praise-toggle.playing{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}
 .praise-frame{width:100%;aspect-ratio:16/9;border-radius:10px;border:none;display:none;margin-top:8px}
 .praise-frame.visible{display:block}
+
+.user-bar{display:flex;align-items:center;gap:8px;background:#f0f0eb;border:1px solid #e0e0da;border-radius:12px;padding:8px 14px;margin-bottom:.75rem}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#3C3489;flex-shrink:0}
+.user-name-disp{font-size:13px;font-weight:500;color:#1a1a1a;flex:1}
+.user-stats{font-size:11px;color:#888}
+.logout-btn{padding:4px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:11px;color:#666;font-family:inherit}
+.logout-btn:hover{background:#e8e8e3}
+.auth-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(245,245,240,0.97);display:flex;align-items:center;justify-content:center;z-index:100}
+.auth-card{background:#fff;border:1px solid #e0e0da;border-radius:12px;padding:2rem;width:100%;max-width:340px;margin:1rem}
+.auth-title{font-size:18px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
+.auth-sub{font-size:13px;color:#888;margin-bottom:1.5rem}
+.auth-label{font-size:12px;color:#888;margin-bottom:6px;display:block}
+.auth-input{width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px;margin-bottom:1rem;font-family:inherit;outline:none}
+.auth-input:focus{border-color:#bbb}
+.auth-btn{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#f0f0eb;cursor:pointer;font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px;font-family:inherit}
+.auth-btn.primary{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}
+.auth-toggle{font-size:12px;color:#888;text-align:center;cursor:default}
+.auth-toggle span{color:#185FA5;cursor:pointer}
+.auth-err{font-size:12px;color:#A32D2D;background:#FCEBEB;border-radius:8px;padding:8px 12px;margin-bottom:1rem;display:none}
+.progress-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.stat-card{background:#f5f5f0;border-radius:8px;padding:10px;text-align:center}
+.stat-num{font-size:20px;font-weight:500;color:#1a1a1a}
+.stat-label{font-size:11px;color:#888;margin-top:2px}
+.empty-state{text-align:center;padding:3rem 1rem;color:#888;font-size:14px}
+.verse-card.status-memorizing{border-left:3px solid #378ADD}
+.verse-card.status-done{border-left:3px solid #639922}
+.card-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mem-btn{width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.15s}
+.mem-btn:hover{background:#f0f0eb}
+.mem-btn.status-memorizing{border-color:#378ADD;background:#E6F1FB}
+.mem-btn.status-done{border-color:#639922;background:#EAF3DE}
+.mem-tooltip{position:absolute;bottom:32px;right:0;background:#fff;border:1px solid #ddd;border-radius:8px;padding:4px 0;white-space:nowrap;z-index:10;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.mem-btn:hover .mem-tooltip{display:block}
+.mem-option{padding:7px 14px;font-size:12px;cursor:pointer;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.mem-option:hover{background:#f5f5f0}
+.status-pip{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.pip-memorizing{background:#378ADD}.pip-done{background:#639922}
 </style>
 </head>
 <body>
@@ -113,6 +150,14 @@ h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8p
   </div>
 </div>
 
+<div class="user-bar" id="user-bar" style="display:none">
+  <div class="user-avatar" id="user-avatar">?</div>
+  <div style="flex:1;min-width:0">
+    <div class="user-name-disp" id="user-name-display">-</div>
+    <div class="user-stats" id="user-stats">암송 중 0 · 완료 0</div>
+  </div>
+  <button class="logout-btn" onclick="logout()">로그아웃</button>
+</div>
 <div class="praise-bar" id="praise-bar">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M9 18V5l12-2v13" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="#888" stroke-width="1.8"/><circle cx="18" cy="16" r="3" stroke="#888" stroke-width="1.8"/></svg>
   <span class="praise-title">찬양 듣기 — 24시간 CCM</span>
@@ -158,7 +203,10 @@ h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8p
     <span class="badge cat-1" onclick="filterAll('1',this)">1권 (12)</span>
     <span class="badge cat-2" onclick="filterAll('2',this)">2권 (26)</span>
     <span class="badge cat-3" onclick="filterAll('3',this)">3권 (26)</span>
+    <span class="badge" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB" onclick="filterAll('memorizing',this)">암송 중</span>
+    <span class="badge" style="background:#EAF3DE;color:#27500A;border-color:#97C459" onclick="filterAll('done',this)">암송 완료</span>
   </div>
+  <div class="progress-summary" id="progress-summary"></div>
   <div id="all-list"></div>
 </div>
 <div id="page-category" class="page"><div id="cat-list"></div></div>
@@ -170,6 +218,8 @@ h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8p
     <span class="badge cat-1" id="fl-1" onclick="filterFlash('1',this)">1권</span>
     <span class="badge cat-2" id="fl-2" onclick="filterFlash('2',this)">2권</span>
     <span class="badge cat-3" id="fl-3" onclick="filterFlash('3',this)">3권</span>
+    <span class="badge" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB" onclick="filterFlash('memorizing',this)">암송 중</span>
+    <span class="badge" style="background:#EAF3DE;color:#27500A;border-color:#97C459" onclick="filterFlash('done',this)">암송 완료</span>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="flash-prog"></div></div>
   <div class="flash-card" onclick="toggleFlash()">
@@ -412,15 +462,24 @@ function filterAll(val,el){
 }
 function renderAll(){
   const list=document.getElementById('all-list');
-  const filtered=allFilter==='all'?verses:verses.filter(v=>v.book==allFilter);
+  let filtered;
+  if(allFilter==='memorizing') filtered=verses.filter((_,i)=>userStatuses[i]==='memorizing');
+  else if(allFilter==='done') filtered=verses.filter((_,i)=>userStatuses[i]==='done');
+  else if(['1','2','3'].includes(allFilter)) filtered=verses.filter(v=>v.book==allFilter);
+  else filtered=verses;
+  if(filtered.length===0){
+    list.innerHTML='<div class="empty-state" style="text-align:center;padding:3rem 1rem;color:#888;font-size:14px">'+(allFilter==='memorizing'?'암송 중인 구절이 없어요. 구절 카드의 ✓ 버튼으로 추가해보세요.':allFilter==='done'?'암송 완료한 구절이 없어요!':'표시할 구절이 없어요.')+'</div>';
+    return;
+  }
   list.innerHTML=filtered.map(v=>{
     const gi=verses.indexOf(v);
-    return `<div class="verse-card" id="vcard-${gi}">
+    return `<div class="verse-card${getStatusClass(gi)}" id="vcard-${gi}">
       <div class="verse-card-top">
         <div class="verse-meta">
-          <div class="verse-topic">${v.topic}<span class="ref-tag ${tagClass[v.book]}">${v.book}권</span>${getLangBadge()}</div>
+          <div class="verse-topic">${v.topic}<span class="ref-tag ${tagClass[v.book]}">${v.book}권</span>${getLangBadge()}${getStatusPip(gi)}</div>
           <div class="verse-ref ${bookColor[v.book]}">${getRef(v)}</div>
-        </div>${inlineBtn(gi)}
+        </div>
+        <div class="card-actions">${currentUser?memBtnHTML(gi):''}${inlineBtn(gi)}</div>
       </div>
       <div class="verse-text" id="vtxt-${gi}">${getText(v)}</div>
     </div>`;
@@ -434,10 +493,10 @@ function renderCategory(){
     <div style="margin-bottom:1.5rem">
       <div class="section-title"><span>${topic}</span><span class="ref-tag ${tagClass[data.book]}">${data.book}권</span>${getLangBadge()}</div>
       ${data.items.map(({v,i})=>`
-        <div class="verse-card" id="vcard-c-${i}">
+        <div class="verse-card${getStatusClass(i)}" id="vcard-c-${i}">
           <div class="verse-card-top">
-            <div class="verse-meta"><div class="verse-ref ${bookColor[v.book]}">${getRef(v)}</div></div>
-            ${inlineBtn(i)}
+            <div class="verse-meta"><div class="verse-ref ${bookColor[v.book]}">${getRef(v)}${getStatusPip(i)}</div></div>
+            <div class="card-actions">${currentUser?memBtnHTML(i):''}${inlineBtn(i)}</div>
           </div>
           <div class="verse-text" id="vtxt-${i}">${getText(v)}</div>
         </div>`).join('')}
@@ -445,7 +504,21 @@ function renderCategory(){
 }
 function filterFlash(val,el){
   flashFilter=val;document.querySelectorAll('#page-flash .badge').forEach(b=>b.classList.remove('active'));el.classList.add('active');
-  flashList=val==='all'?verses:verses.filter(v=>v.book==val);flashIdx=0;flashRevealed=false;renderFlash();
+  if(val==='memorizing') flashList=verses.filter((_,i)=>userStatuses[i]==='memorizing');
+  else if(val==='done') flashList=verses.filter((_,i)=>userStatuses[i]==='done');
+  else if(['1','2','3'].includes(val)) flashList=verses.filter(v=>v.book==val);
+  else flashList=[...verses];
+  flashIdx=0;flashRevealed=false;
+  if(flashList.length===0){
+    document.getElementById('flash-topic').textContent='표시할 구절이 없어요';
+    document.getElementById('flash-ref').textContent='';
+    document.getElementById('flash-front').textContent='';
+    document.getElementById('flash-back').textContent='';
+    document.getElementById('flash-hint').textContent='';
+    document.getElementById('flash-counter').textContent='0 / 0';
+    return;
+  }
+  renderFlash();
 }
 function renderFlash(){
   if(!flashList.length)return;
@@ -562,6 +635,142 @@ function togglePraiseExpand(){
   btn.textContent=praiseExpanded?'화면 닫기':'화면 보기';
 }
 
+
+// ===== AUTH =====
+var authMode='login', currentUser=null, userStatuses={};
+
+function toggleAuthMode(){
+  authMode=authMode==='login'?'register':'login';
+  document.getElementById('auth-title').textContent=authMode==='login'?'로그인':'회원가입';
+  document.getElementById('auth-sub').textContent=authMode==='login'?'이름과 비밀번호 4자리를 입력하세요':'이름과 비밀번호 4자리를 설정하세요';
+  document.getElementById('auth-pw2-wrap').style.display=authMode==='register'?'block':'none';
+  document.getElementById('auth-submit-btn').textContent=authMode==='login'?'로그인':'가입하기';
+  document.getElementById('auth-toggle').innerHTML=authMode==='login'
+    ?'계정이 없으신가요? <span onclick="toggleAuthMode()">가입하기</span>'
+    :'이미 계정이 있으신가요? <span onclick="toggleAuthMode()">로그인</span>';
+  document.getElementById('auth-err').style.display='none';
+}
+
+function showAuthErr(msg){var e=document.getElementById('auth-err');e.textContent=msg;e.style.display='block';}
+
+async function doAuth(){
+  var name=document.getElementById('auth-name').value.trim();
+  var pw=document.getElementById('auth-pw').value.trim();
+  if(!name){showAuthErr('이름을 입력하세요.');return;}
+  if(!/^\d{4}$/.test(pw)){showAuthErr('비밀번호는 숫자 4자리여야 합니다.');return;}
+  var users={};
+  try{var r=await window.storage.get('users');if(r)users=JSON.parse(r.value);}catch(e){}
+  if(authMode==='register'){
+    var pw2=document.getElementById('auth-pw2').value.trim();
+    if(pw!==pw2){showAuthErr('비밀번호가 일치하지 않습니다.');return;}
+    if(users[name]){showAuthErr('이미 존재하는 이름입니다.');return;}
+    users[name]=pw;
+    try{await window.storage.set('users',JSON.stringify(users));}catch(e){}
+    loginUser(name);
+  } else {
+    if(!users[name]){showAuthErr('등록되지 않은 이름입니다.');return;}
+    if(users[name]!==pw){showAuthErr('비밀번호가 올바르지 않습니다.');return;}
+    loginUser(name);
+  }
+}
+
+async function loginUser(name){
+  currentUser=name;
+  try{var r=await window.storage.get('status_'+name);userStatuses=r?JSON.parse(r.value):{};}catch(e){userStatuses={};}
+  document.getElementById('auth-overlay').style.display='none';
+  document.getElementById('user-bar').style.display='flex';
+  document.getElementById('user-avatar').textContent=name.charAt(0);
+  document.getElementById('user-name-display').textContent=name;
+  updateUserStats();
+  renderAll();renderCategory();renderFlash();
+}
+
+function logout(){
+  currentUser=null;userStatuses={};
+  stopAll();
+  document.getElementById('auth-overlay').style.display='flex';
+  document.getElementById('user-bar').style.display='none';
+  document.getElementById('auth-name').value='';
+  document.getElementById('auth-pw').value='';
+  document.getElementById('auth-pw2').value='';
+  document.getElementById('auth-err').style.display='none';
+}
+
+function updateUserStats(){
+  var mem=Object.values(userStatuses).filter(function(s){return s==='memorizing';}).length;
+  var done=Object.values(userStatuses).filter(function(s){return s==='done';}).length;
+  document.getElementById('user-stats').textContent='암송 중 '+mem+' · 완료 '+done;
+  renderProgressSummary();
+}
+
+function renderProgressSummary(){
+  var mem=Object.values(userStatuses).filter(function(s){return s==='memorizing';}).length;
+  var done=Object.values(userStatuses).filter(function(s){return s==='done';}).length;
+  var el=document.getElementById('progress-summary');
+  if(el) el.innerHTML='<div class="stat-card"><div class="stat-num">'+(64-mem-done)+'</div><div class="stat-label">미시작</div></div>'
+    +'<div class="stat-card"><div class="stat-num" style="color:#378ADD">'+mem+'</div><div class="stat-label">암송 중</div></div>'
+    +'<div class="stat-card"><div class="stat-num" style="color:#639922">'+done+'</div><div class="stat-label">암송 완료</div></div>';
+}
+
+async function setStatus(idx,status){
+  if(!currentUser)return;
+  if(userStatuses[idx]===status)delete userStatuses[idx];
+  else userStatuses[idx]=status;
+  try{await window.storage.set('status_'+currentUser,JSON.stringify(userStatuses));}catch(e){}
+  updateUserStats();
+  renderAll();renderCategory();
+}
+
+function getStatusClass(idx){
+  var s=userStatuses[idx];
+  if(s==='memorizing')return ' status-memorizing';
+  if(s==='done')return ' status-done';
+  return '';
+}
+function getStatusPip(idx){
+  var s=userStatuses[idx];
+  if(s==='memorizing')return '<span class="status-pip pip-memorizing"></span>';
+  if(s==='done')return '<span class="status-pip pip-done"></span>';
+  return '';
+}
+function memBtnHTML(idx){
+  var s=userStatuses[idx];
+  var cls='mem-btn'+(s?' status-'+s:'');
+  var icon=s==='done'
+    ?'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 6l3 3 5-5" stroke="#639922" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    :s==='memorizing'
+    ?'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M6 2v4l2.5 2.5" stroke="#378ADD" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="6" cy="6" r="5" stroke="#378ADD" stroke-width="1.2" fill="none"/></svg>'
+    :'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 6l3 3 5-5" stroke="#bbb" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  return '<div class="'+cls+'" style="position:relative">'+icon
+    +'<div class="mem-tooltip">'
+    +'<div class="mem-option" onclick="event.stopPropagation();setStatus('+idx+',\'memorizing\')">'
+    +'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M6 2v4l2.5 2.5" stroke="#378ADD" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="6" cy="6" r="5" stroke="#378ADD" stroke-width="1.2" fill="none"/></svg>'
+    +'암송 중</div>'
+    +'<div class="mem-option" onclick="event.stopPropagation();setStatus('+idx+',\'done\')">'
+    +'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 6l3 3 5-5" stroke="#639922" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    +'암송 완료</div>'
+    +'</div></div>';
+}
+
 </script>
+
+<div id="auth-overlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-title" id="auth-title">로그인</div>
+    <div class="auth-sub" id="auth-sub">이름과 비밀번호 4자리를 입력하세요</div>
+    <div class="auth-err" id="auth-err"></div>
+    <label class="auth-label">이름</label>
+    <input class="auth-input" id="auth-name" type="text" placeholder="이름 입력" maxlength="20">
+    <label class="auth-label">비밀번호 (4자리 숫자)</label>
+    <input class="auth-input" id="auth-pw" type="password" placeholder="4자리 숫자" maxlength="4" inputmode="numeric" onkeydown="if(event.key==='Enter')doAuth()">
+    <div id="auth-pw2-wrap" style="display:none">
+      <label class="auth-label">비밀번호 확인</label>
+      <input class="auth-input" id="auth-pw2" type="password" placeholder="4자리 숫자 재입력" maxlength="4" inputmode="numeric">
+    </div>
+    <button class="auth-btn primary" onclick="doAuth()" id="auth-submit-btn">로그인</button>
+    <div class="auth-toggle" id="auth-toggle">계정이 없으신가요? <span onclick="toggleAuthMode()">가입하기</span></div>
+  </div>
+</div>
+
 </body>
 </html>
