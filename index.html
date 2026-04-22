@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제자훈련 성경암송 64구절</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+.app{max-width:800px;margin:0 auto;padding:1.5rem 1rem 3rem}
+h1{font-size:18px;font-weight:500;color:#1a1a1a;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+h1 span{font-size:12px;font-weight:400;color:#888;background:#eee;padding:2px 8px;border-radius:10px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:8px}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav-btn{padding:7px 14px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#666;white-space:nowrap;font-family:inherit}
+.nav-btn.active{background:#f0f0eb;color:#1a1a1a;border-color:#bbb;font-weight:500}
+.lang-switcher{display:flex;gap:4px;align-items:center}
+.lang-label{font-size:11px;color:#aaa;margin-right:4px}
+.lang-btn{padding:5px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:500;color:#666;font-family:inherit}
+.lang-btn.active{background:#f0f0eb;color:#1a1a1a;border-color:#bbb}
+.global-player{background:#f0f0eb;border:1px solid #e0e0da;border-radius:12px;padding:12px 16px;margin-bottom:.75rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.gp-info{flex:1;min-width:0}
+.gp-title{font-size:12px;font-weight:500;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gp-sub{font-size:11px;color:#888;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gp-controls{display:flex;align-items:center;gap:8px}
+.play-btn{width:36px;height:36px;border-radius:50%;border:1px solid #ccc;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.play-btn:hover{background:#e8e8e3}
+.skip-btn{width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.skip-btn:hover{background:#e8e8e3}
+.speed-btn{padding:3px 8px;border:1px solid #ddd;border-radius:6px;background:transparent;cursor:pointer;font-size:11px;color:#888;font-family:inherit}
+.speed-btn.active{background:#f0f0eb;color:#1a1a1a;border-color:#bbb}
+.gp-counter{font-size:11px;color:#aaa;white-space:nowrap}
+.tts-note{font-size:11px;color:#bbb;text-align:center;margin-bottom:.75rem}
+.page{display:none}.page.active{display:block}
+.filter-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;align-items:center}
+.filter-label{font-size:12px;color:#888;margin-right:4px}
+.badge{display:inline-block;font-size:11px;padding:2px 10px;border-radius:12px;cursor:pointer;border:1px solid transparent}
+.cat-all{background:#eee;color:#444;border-color:#ccc}
+.cat-1{background:#EEEDFE;color:#3C3489}.cat-2{background:#E1F5EE;color:#085041}.cat-3{background:#FAEEDA;color:#633806}
+.badge.active{border-width:2px}
+.verse-card{background:#fff;border:1px solid #e8e8e3;border-radius:12px;padding:1rem 1.25rem;margin-bottom:8px;transition:border-color 0.2s}
+.verse-card.playing-loop{border-color:#1D9E75;border-width:1.5px}
+.verse-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.verse-meta{flex:1;min-width:0}
+.verse-topic{font-size:11px;color:#888;margin-bottom:3px}
+.verse-ref{font-size:12px;font-weight:500}
+.verse-text{font-size:14px;color:#1a1a1a;line-height:1.85}
+.verse-text.highlight-playing{color:#0C447C}
+.inline-play{width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.inline-play:hover{background:#f0f0eb;border-color:#bbb}
+.inline-play.looping{border-color:#1D9E75;background:#E1F5EE}
+.ref-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px}
+.tag-1{background:#EEEDFE;color:#3C3489}.tag-2{background:#E1F5EE;color:#085041}.tag-3{background:#FAEEDA;color:#633806}
+.ref-1{color:#3C3489}.ref-2{color:#085041}.ref-3{color:#633806}
+.ver-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:8px;background:#E6F1FB;color:#0C447C;margin-left:6px;font-weight:500;vertical-align:middle}
+.section-title{font-size:15px;font-weight:500;color:#1a1a1a;margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid #e8e8e3;display:flex;align-items:center;gap:8px}
+.flash-card{background:#fff;border:1px solid #e8e8e3;border-radius:12px;padding:2rem;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s}
+.flash-card:hover{background:#f8f8f4}
+.flash-ref{font-size:13px;font-weight:500;margin-bottom:8px}
+.flash-topic{font-size:12px;color:#888;margin-bottom:12px}
+.flash-text{font-size:15px;color:#1a1a1a;line-height:1.9;max-width:580px}
+.flash-hint{font-size:12px;color:#bbb;margin-top:16px}
+.flash-controls{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:1.5rem}
+.ctrl-btn{padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;color:#1a1a1a;font-family:inherit}
+.ctrl-btn:hover{background:#f0f0eb}
+.ctrl-btn:disabled{opacity:0.4;cursor:not-allowed}
+.flash-counter{font-size:13px;color:#888;min-width:60px;text-align:center}
+.progress-bar{height:4px;background:#e0e0da;border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;transition:width 0.3s}
+.prog-1{background:#7F77DD}.prog-2{background:#1D9E75}.prog-3{background:#BA7517}
+.quiz-info{font-size:13px;color:#888;margin-bottom:1rem}
+.quiz-verse-area{background:#f5f5f0;border-radius:12px;padding:1.25rem 1.5rem;font-size:15px;line-height:2.4;color:#1a1a1a;margin-bottom:1.25rem;min-height:90px}
+.blank{display:inline-block;min-width:70px;border-bottom:2px solid #bbb;margin:0 3px;text-align:center;vertical-align:bottom;font-weight:500;cursor:pointer;padding:0 4px;transition:all 0.15s}
+.blank.filled{border-color:#1D9E75;color:#1D9E75}
+.blank.wrong{border-color:#E24B4A;color:#E24B4A;animation:shake 0.3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.piece-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem}
+.piece{background:#fff;border:1px solid #ddd;border-radius:8px;padding:7px 16px;cursor:pointer;font-size:14px;color:#1a1a1a;transition:all 0.15s;user-select:none;font-family:inherit}
+.piece:hover{background:#f0f0eb}
+.piece.used{opacity:0.3;cursor:not-allowed;pointer-events:none}
+.quiz-result{text-align:center;padding:2rem;background:#f5f5f0;border-radius:12px}
+.quiz-score{font-size:32px;font-weight:500;margin-bottom:8px}
+.quiz-msg{font-size:14px;color:#888}
+.btn-primary{padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:#f0f0eb;cursor:pointer;font-size:14px;color:#1a1a1a;margin-top:12px;font-family:inherit}
+.correct-msg{font-size:13px;margin-top:8px;height:20px}
+@media(max-width:600px){.top-bar{flex-direction:column;align-items:flex-start}.app{padding:1rem .75rem 3rem}}
+
+.praise-bar{background:var(--color-background-secondary,#f0f0eb);border:1px solid #e0e0da;border-radius:12px;padding:10px 14px;margin-bottom:.75rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.praise-title{font-size:12px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.praise-toggle{padding:5px 14px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;color:#1a1a1a;white-space:nowrap;font-family:inherit}
+.praise-toggle:hover{background:#e8e8e3}
+.praise-toggle.playing{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}
+.praise-frame{width:100%;aspect-ratio:16/9;border-radius:10px;border:none;display:none;margin-top:8px}
+.praise-frame.visible{display:block}
+
+.user-bar{display:flex;align-items:center;gap:8px;background:#f0f0eb;border:1px solid #e0e0da;border-radius:12px;padding:8px 14px;margin-bottom:.75rem}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#3C3489;flex-shrink:0}
+.user-name-disp{font-size:13px;font-weight:500;color:#1a1a1a;flex:1}
+.user-stats{font-size:11px;color:#888}
+.logout-btn{padding:4px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:11px;color:#666;font-family:inherit}
+.logout-btn:hover{background:#e8e8e3}
+.auth-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(245,245,240,0.97);display:flex;align-items:center;justify-content:center;z-index:100}
+.auth-card{background:#fff;border:1px solid #e0e0da;border-radius:12px;padding:2rem;width:100%;max-width:340px;margin:1rem}
+.auth-title{font-size:18px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
+.auth-sub{font-size:13px;color:#888;margin-bottom:1.5rem}
+.auth-label{font-size:12px;color:#888;margin-bottom:6px;display:block}
+.auth-input{width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px;margin-bottom:1rem;font-family:inherit;outline:none}
+.auth-input:focus{border-color:#bbb}
+.auth-btn{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#f0f0eb;cursor:pointer;font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px;font-family:inherit}
+.auth-btn.primary{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}
+.auth-toggle{font-size:12px;color:#888;text-align:center;cursor:default}
+.auth-toggle span{color:#185FA5;cursor:pointer}
+.auth-err{font-size:12px;color:#A32D2D;background:#FCEBEB;border-radius:8px;padding:8px 12px;margin-bottom:1rem;display:none}
+.progress-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.stat-card{background:#f5f5f0;border-radius:8px;padding:10px;text-align:center}
+.stat-num{font-size:20px;font-weight:500;color:#1a1a1a}
+.stat-label{font-size:11px;color:#888;margin-top:2px}
+.empty-state{text-align:center;padding:3rem 1rem;color:#888;font-size:14px}
+.verse-card.status-memorizing{border-left:3px solid #378ADD}
+.verse-card.status-done{border-left:3px solid #639922}
+.card-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mem-btn{width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.15s}
+.mem-btn:hover{background:#f0f0eb}
+.mem-btn.status-memorizing{border-color:#378ADD;background:#E6F1FB}
+.mem-btn.status-done{border-color:#639922;background:#EAF3DE}
+.mem-tooltip{position:absolute;bottom:32px;right:0;background:#fff;border:1px solid #ddd;border-radius:8px;padding:4px 0;white-space:nowrap;z-index:10;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.mem-btn:hover .mem-tooltip{display:block}
+.mem-option{padding:7px 14px;font-size:12px;cursor:pointer;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.mem-option:hover{background:#f5f5f0}
+.status-pip{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.pip-memorizing{background:#378ADD}.pip-done{background:#639922}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>제자훈련 성경암송 <span>64구절</span></h1>
+
+<div class="top-bar">
+  <div class="nav">
+    <button class="nav-btn active" onclick="showPage('all',event)">전체 말씀</button>
+    <button class="nav-btn" onclick="showPage('category',event)">주제별 보기</button>
+    <button class="nav-btn" onclick="showPage('quiz',event)">퀴즈 게임</button>
+    <button class="nav-btn" onclick="showPage('flash',event)">플래시 카드</button>
+  </div>
+  <div class="lang-switcher">
+    <span class="lang-label">언어</span>
+    <button class="lang-btn active" id="btn-ko" onclick="switchLang('ko')">한국어</button>
+    <button class="lang-btn" id="btn-nirv" onclick="switchLang('nirv')">NIrV</button>
+    <button class="lang-btn" id="btn-niv" onclick="switchLang('niv')">NIV</button>
+  </div>
+</div>
+
+<div class="user-bar" id="user-bar" style="display:none">
+  <div class="user-avatar" id="user-avatar">?</div>
+  <div style="flex:1;min-width:0">
+    <div class="user-name-disp" id="user-name-display">-</div>
+    <div class="user-stats" id="user-stats">암송 중 0 · 완료 0</div>
+  </div>
+  <button class="logout-btn" onclick="logout()">로그아웃</button>
+</div>
+<div class="praise-bar" id="praise-bar">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M9 18V5l12-2v13" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="#888" stroke-width="1.8"/><circle cx="18" cy="16" r="3" stroke="#888" stroke-width="1.8"/></svg>
+  <span class="praise-title">찬양 듣기 — 24시간 CCM</span>
+  <button class="praise-toggle" id="praise-btn" onclick="togglePraise()">재생</button>
+  <button onclick="togglePraiseExpand()" style="padding:5px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:11px;color:#888;font-family:inherit" id="praise-expand-btn">화면 보기</button>
+</div>
+<iframe id="praise-iframe"
+  class="praise-frame"
+  src=""
+  allow="autoplay; encrypted-media"
+  allowfullscreen
+  title="찬양 스트리밍"></iframe>
+
+<div class="global-player">
+  <div class="gp-controls">
+    <button class="skip-btn" onclick="globalSkip(-1)">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="#888"><path d="M3 2h1.5v5.3L13 2v12L4.5 8.7V14H3z"/></svg>
+    </button>
+    <button class="play-btn" onclick="toggleGlobal()">
+      <svg id="gp-icon" width="16" height="16" viewBox="0 0 16 16" fill="#1a1a1a"><path d="M4 2l10 6-10 6z"/></svg>
+    </button>
+    <button class="skip-btn" onclick="globalSkip(1)">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="#888"><path d="M13 2h-1.5v5.3L3 2v12l8.5-5.3V14H13z"/></svg>
+    </button>
+  </div>
+  <div class="gp-info">
+    <div class="gp-title" id="gp-title">전체 순서대로 읽기</div>
+    <div class="gp-sub" id="gp-sub">재생 버튼을 눌러 시작하세요</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+    <button class="speed-btn" onclick="setSpeed(0.8,this)">0.8x</button>
+    <button class="speed-btn active" onclick="setSpeed(1.2,this)">1.2x</button>
+    <button class="speed-btn" onclick="setSpeed(1.5,this)">1.5x</button>
+  </div>
+  <div class="gp-counter" id="gp-counter">0 / 64</div>
+</div>
+<div class="tts-note">브라우저 내장 음성(TTS)을 사용합니다. 목소리는 기기 설정에 따라 다를 수 있어요.</div>
+
+<div id="page-all" class="page active">
+  <div class="filter-row">
+    <span class="filter-label">권별:</span>
+    <span class="badge cat-all active" onclick="filterAll('all',this)">전체 64구절</span>
+    <span class="badge cat-1" onclick="filterAll('1',this)">1권 (12)</span>
+    <span class="badge cat-2" onclick="filterAll('2',this)">2권 (26)</span>
+    <span class="badge cat-3" onclick="filterAll('3',this)">3권 (26)</span>
+    <span class="badge" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB" onclick="filterAll('memorizing',this)">암송 중</span>
+    <span class="badge" style="background:#EAF3DE;color:#27500A;border-color:#97C459" onclick="filterAll('done',this)">암송 완료</span>
+  </div>
+  <div class="progress-summary" id="progress-summary"></div>
+  <div id="all-list"></div>
+</div>
+<div id="page-category" class="page"><div id="cat-list"></div></div>
+<div id="page-quiz" class="page"><div id="quiz-container"></div></div>
+<div id="page-flash" class="page">
+  <div class="filter-row">
+    <span class="filter-label">권별:</span>
+    <span class="badge cat-all active" id="fl-all" onclick="filterFlash('all',this)">전체</span>
+    <span class="badge cat-1" id="fl-1" onclick="filterFlash('1',this)">1권</span>
+    <span class="badge cat-2" id="fl-2" onclick="filterFlash('2',this)">2권</span>
+    <span class="badge cat-3" id="fl-3" onclick="filterFlash('3',this)">3권</span>
+    <span class="badge" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB" onclick="filterFlash('memorizing',this)">암송 중</span>
+    <span class="badge" style="background:#EAF3DE;color:#27500A;border-color:#97C459" onclick="filterFlash('done',this)">암송 완료</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="flash-prog"></div></div>
+  <div class="flash-card" onclick="toggleFlash()">
+    <div class="flash-topic" id="flash-topic"></div>
+    <div class="flash-ref" id="flash-ref"></div>
+    <div class="flash-text" id="flash-front"></div>
+    <div class="flash-text" id="flash-back" style="display:none"></div>
+    <div class="flash-hint" id="flash-hint">탭하면 말씀이 나타납니다</div>
+  </div>
+  <div class="flash-controls">
+    <button class="ctrl-btn" id="fl-prev" onclick="flashNav(-1)">← 이전</button>
+    <span class="flash-counter" id="flash-counter">1 / 64</span>
+    <button class="ctrl-btn" id="fl-next" onclick="flashNav(1)">다음 →</button>
+  </div>
+</div>
+</div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+const verses=[
+  {book:1,topic:"나의 신앙고백과 간증",ref:"Romans 10:9-10",koRef:"로마서 10:9-10",ko:"네가 만일 네 입으로 예수를 주로 시인하며 또 하나님께서 그를 죽은 자 가운데서 살리신 것을 네 마음에 믿으면 구원을 받으리라 사람이 마음으로 믿어 의에 이르고 입으로 시인하여 구원에 이르느니라"},
+  {book:1,topic:"나의 신앙고백과 간증",ref:"Matthew 16:16",koRef:"마태복음 16:16",ko:"시몬 베드로가 대답하여 이르되 주는 그리스도시요 살아 계신 하나님의 아들이시니이다"},
+  {book:1,topic:"하나님과 매일 만나는 생활",ref:"Hebrews 4:16",koRef:"히브리서 4:16",ko:"그러므로 우리는 긍휼하심을 받고 때를 따라 돕는 은혜를 얻기 위하여 은혜의 보좌 앞에 담대히 나아갈 것이니라"},
+  {book:1,topic:"하나님과 매일 만나는 생활",ref:"Lamentations 3:22-23",koRef:"예레미야애가 3:22-23",ko:"여호와의 인자와 긍휼이 무궁하시므로 우리가 진멸되지 아니함이니이다 이것들이 아침마다 새로우니 주의 성실하심이 크시도소이다"},
+  {book:1,topic:"경건의 시간",ref:"Psalm 1:1-2",koRef:"시편 1:1-2",ko:"복 있는 사람은 악인들의 꾀를 따르지 아니하며 죄인들의 길에 서지 아니하며 오만한 자들의 자리에 앉지 아니하고 오직 여호와의 율법을 즐거워하여 그의 율법을 주야로 묵상하는도다"},
+  {book:1,topic:"경건의 시간",ref:"Psalm 119:105",koRef:"시편 119:105",ko:"주의 말씀은 내 발에 등이요 내 길에 빛이니이다"},
+  {book:1,topic:"살았고 운동력 있는 말씀",ref:"Romans 1:16",koRef:"로마서 1:16",ko:"내가 복음을 부끄러워하지 아니하노니 이 복음은 모든 믿는 자에게 구원을 주시는 하나님의 능력이 됨이라 먼저는 유대인에게요 그리고 헬라인에게로다"},
+  {book:1,topic:"살았고 운동력 있는 말씀",ref:"2 Timothy 3:16",koRef:"디모데후서 3:16",ko:"모든 성경은 하나님의 감동으로 된 것으로 교훈과 책망과 바르게 함과 의로 교육하기에 유익하니"},
+  {book:1,topic:"무엇이 바른 기도인가",ref:"Philippians 4:6-7",koRef:"빌립보서 4:6-7",ko:"아무 것도 염려하지 말고 다만 모든 일에 기도와 간구로, 너희 구할 것을 감사함으로 하나님께 아뢰라 그리하면 모든 지각에 뛰어난 하나님의 평강이 그리스도 예수 안에서 너희 마음과 생각을 지키시리라"},
+  {book:1,topic:"무엇이 바른 기도인가",ref:"Matthew 6:6",koRef:"마태복음 6:6",ko:"너는 기도할 때에 네 골방에 들어가 문을 닫고 은밀한 중에 계신 네 아버지께 기도하라 은밀한 중에 보시는 네 아버지께서 갚으시리라"},
+  {book:1,topic:"기도의 응답",ref:"John 15:7",koRef:"요한복음 15:7",ko:"너희가 내 안에 거하고 내 말이 너희 안에 거하면 무엇이든지 원하는 대로 구하라 그리하면 이루리라"},
+  {book:1,topic:"기도의 응답",ref:"Matthew 7:11",koRef:"마태복음 7:11",ko:"너희가 악한 자라도 좋은 것으로 자식에게 줄 줄 알거든 하물며 하늘에 계신 너희 아버지께서 구하는 자에게 좋은 것으로 주시지 않겠느냐"},
+  {book:2,topic:"성경의 권위",ref:"2 Peter 1:21",koRef:"베드로후서 1:21",ko:"예언은 언제든지 사람의 뜻으로 낸 것이 아니요 오직 성령의 감동하심을 받은 사람들이 하나님께 받아 말한 것임이라"},
+  {book:2,topic:"성경의 권위",ref:"Joshua 1:8",koRef:"여호수아 1:8",ko:"이 율법책을 네 입에서 떠나지 말게 하며 주야로 그것을 묵상하여 그 안에 기록된 대로 다 지켜 행하라 그리하면 네 길이 평탄하게 될 것이며 네가 형통하리라"},
+  {book:2,topic:"하나님은 누구신가",ref:"Romans 11:36",koRef:"로마서 11:36",ko:"이는 만물이 주에게서 나오고 주로 말미암고 주에게로 돌아감이라"},
+  {book:2,topic:"하나님은 누구신가",ref:"Jeremiah 31:3",koRef:"예레미야 31:3",ko:"내가 영원한 사랑으로 너를 사랑하기에 인자함으로 너를 이끌었다 하였노라"},
+  {book:2,topic:"예수 그리스도는 누구신가",ref:"Hebrews 4:15",koRef:"히브리서 4:15",ko:"우리에게 있는 대제사장은 우리의 연약함을 동정하지 못하실 이가 아니요 모든 일에 우리와 똑같이 시험을 받으신 이로되 죄는 없으시니라"},
+  {book:2,topic:"예수 그리스도는 누구신가",ref:"John 14:6",koRef:"요한복음 14:6",ko:"예수께서 이르시되 내가 곧 길이요 진리요 생명이니 나로 말미암지 않고는 아버지께로 올 자가 없느니라"},
+  {book:2,topic:"삼위일체 하나님",ref:"John 1:1",koRef:"요한복음 1:1",ko:"태초에 말씀이 계시니라 이 말씀이 하나님과 함께 계셨으니 이 말씀은 곧 하나님이시니라"},
+  {book:2,topic:"삼위일체 하나님",ref:"2 Corinthians 13:13",koRef:"고린도후서 13:13",ko:"주 예수 그리스도의 은혜와 하나님의 사랑과 성령의 교통하심이 너희 무리와 함께 있을지어다"},
+  {book:2,topic:"인간의 타락과 그 결과",ref:"Romans 5:12",koRef:"로마서 5:12",ko:"그러므로 한 사람으로 말미암아 죄가 세상에 들어오고 죄로 말미암아 사망이 들어왔나니 이와 같이 모든 사람이 죄를 지었으므로 사망이 모든 사람에게 이르렀느니라"},
+  {book:2,topic:"인간의 타락과 그 결과",ref:"Hebrews 9:27",koRef:"히브리서 9:27",ko:"한번 죽는 것은 사람에게 정해진 것이요 그 후에는 심판이 있으리니"},
+  {book:2,topic:"예수 그리스도의 죽음",ref:"Romans 5:8",koRef:"로마서 5:8",ko:"우리가 아직 죄인 되었을 때에 그리스도께서 우리를 위하여 죽으심으로 하나님께서 우리에 대한 자기의 사랑을 확증하셨느니라"},
+  {book:2,topic:"예수 그리스도의 죽음",ref:"Galatians 3:13",koRef:"갈라디아서 3:13",ko:"그리스도께서 우리를 위하여 저주를 받은 바 되사 율법의 저주에서 우리를 속량하셨으니 기록된 바 나무에 달린 자마다 저주 아래에 있는 자라 하였음이라"},
+  {book:2,topic:"예수 그리스도의 부활",ref:"Romans 4:25",koRef:"로마서 4:25",ko:"예수는 우리가 범죄한 것 때문에 내줌이 되고 또한 우리를 의롭다 하시기 위하여 살아나셨느니라"},
+  {book:2,topic:"예수 그리스도의 부활",ref:"Galatians 2:20",koRef:"갈라디아서 2:20",ko:"내가 그리스도와 함께 십자가에 못 박혔나니 그런즉 이제는 내가 사는 것이 아니요 오직 내 안에 그리스도께서 사시는 것이라 이제 내가 육체 가운데 사는 것은 나를 사랑하사 나를 위하여 자기 자신을 버리신 하나님의 아들을 믿는 믿음 안에서 사는 것이라"},
+  {book:2,topic:"약속대로 오신 성령",ref:"Acts 2:38",koRef:"사도행전 2:38",ko:"베드로가 이르되 너희가 회개하여 각각 예수 그리스도의 이름으로 세례를 받고 죄 사함을 받으라 그리하면 성령의 선물을 받으리니"},
+  {book:2,topic:"약속대로 오신 성령",ref:"1 Corinthians 12:13",koRef:"고린도전서 12:13",ko:"우리가 유대인이나 헬라인이나 종이나 자유인이나 다 한 성령으로 세례를 받아 한 몸이 되었고 또 다 한 성령을 마시게 하셨느니라"},
+  {book:2,topic:"거듭난 사람",ref:"Titus 3:5",koRef:"디도서 3:5",ko:"우리를 구원하시되 우리가 행한 바 의로운 행위로 말미암지 아니하고 오직 그의 긍휼하심을 따라 중생의 씻음과 성령의 새롭게 하심으로 하셨나니"},
+  {book:2,topic:"거듭난 사람",ref:"1 Thessalonians 1:3-4",koRef:"데살로니가전서 1:3-4",ko:"너희의 믿음의 역사와 사랑의 수고와 우리 주 예수 그리스도에 대한 소망의 인내를 우리 하나님 아버지 앞에서 끊임없이 기억함이니 하나님의 사랑하심을 받은 형제들아 너희를 택하심을 아노라"},
+  {book:2,topic:"믿음이란 무엇인가",ref:"Ephesians 2:8-9",koRef:"에베소서 2:8-9",ko:"너희는 그 은혜에 의하여 믿음으로 말미암아 구원을 받았으니 이것은 너희에게서 난 것이 아니요 하나님의 선물이라 행위에서 난 것이 아니니 이는 누구든지 자랑하지 못하게 함이라"},
+  {book:2,topic:"믿음이란 무엇인가",ref:"Romans 4:18",koRef:"로마서 4:18",ko:"아브라함이 바랄 수 없는 중에 바라고 믿었으니 이는 네 후손이 이같으리라 하신 말씀대로 많은 민족의 조상이 되게 하려 하심이라"},
+  {book:2,topic:"의롭다 함을 받은 은혜",ref:"Romans 3:21-22",koRef:"로마서 3:21-22",ko:"이제는 율법 외에 하나님의 한 의가 나타났으니 율법과 선지자들에게 증거를 받은 것이라 곧 예수 그리스도를 믿음으로 말미암아 모든 믿는 자에게 미치는 하나님의 의니 차별이 없느니라"},
+  {book:2,topic:"의롭다 함을 받은 은혜",ref:"Romans 8:32",koRef:"로마서 8:32",ko:"자기 아들을 아끼지 아니하시고 우리 모든 사람을 위하여 내주신 이가 어찌 그 아들과 함께 모든 것을 우리에게 주시지 아니하겠느냐"},
+  {book:2,topic:"우리 안에 계시는 성령",ref:"Romans 8:26",koRef:"로마서 8:26",ko:"이와 같이 성령도 우리의 연약함을 도우시나니 우리는 마땅히 기도할 바를 알지 못하나 오직 성령이 말할 수 없는 탄식으로 우리를 위하여 친히 간구하시느니라"},
+  {book:2,topic:"우리 안에 계시는 성령",ref:"Galatians 5:22-23",koRef:"갈라디아서 5:22-23",ko:"오직 성령의 열매는 사랑과 희락과 화평과 오래 참음과 자비와 양선과 충성과 온유와 절제니 이같은 것을 금지할 법이 없느니라"},
+  {book:2,topic:"그리스도인의 성화",ref:"2 Corinthians 7:1",koRef:"고린도후서 7:1",ko:"그런즉 사랑하는 자들아 이 약속을 가진 우리는 하나님을 두려워하는 가운데서 거룩함을 온전히 이루어 육과 영의 온갖 더러운 것에서 자신을 깨끗하게 하자"},
+  {book:2,topic:"그리스도인의 성화",ref:"1 John 3:3",koRef:"요한1서 3:3",ko:"주를 향하여 이 소망을 가진 자마다 그의 깨끗하심과 같이 자기를 깨끗하게 하느니라"},
+  {book:2,topic:"예수 그리스도의 재림",ref:"Revelation 22:7",koRef:"요한계시록 22:7",ko:"보라 내가 속히 오리니 이 두루마리의 예언의 말씀을 지키는 자는 복이 있으리라 하더라"},
+  {book:2,topic:"예수 그리스도의 재림",ref:"1 Thessalonians 4:16-17",koRef:"데살로니가전서 4:16-17",ko:"주께서 호령과 천사장의 소리와 하나님의 나팔 소리로 친히 하늘로부터 강림하시리니 그리스도 안에서 죽은 자들이 먼저 일어나고 그 후에 우리 살아 남은 자들도 그들과 함께 구름 속으로 끌어 올려 공중에서 주를 영접하게 하시리니 그리하여 우리가 항상 주와 함께 있으리라"},
+  {book:3,topic:"순종의 생활",ref:"Matthew 7:24",koRef:"마태복음 7:24",ko:"그러므로 누구든지 나의 이 말을 듣고 행하는 자는 그 집을 반석 위에 지은 지혜로운 사람 같으리니"},
+  {book:3,topic:"순종의 생활",ref:"John 14:21",koRef:"요한복음 14:21",ko:"나의 계명을 지키는 자라야 나를 사랑하는 자니 나를 사랑하는 자는 내 아버지께 사랑을 받을 것이요 나도 그를 사랑하여 그에게 나를 나타내리라"},
+  {book:3,topic:"봉사의 의무",ref:"Philippians 2:3-4",koRef:"빌립보서 2:3-4",ko:"아무 일에든지 다툼이나 허영으로 하지 말고 오직 겸손한 마음으로 각각 자기보다 남을 낫게 여기고 각각 자기 일을 돌볼뿐더러 또한 각각 다른 사람들의 일을 돌보아 나의 기쁨을 충만하게 하라"},
+  {book:3,topic:"봉사의 의무",ref:"1 Peter 4:11",koRef:"베드로전서 4:11",ko:"만일 누가 말하려면 하나님의 말씀을 하는 것 같이 하고 누가 봉사하려면 하나님이 공급하시는 힘으로 하는 것 같이 하라"},
+  {book:3,topic:"그리스도를 증거하는 생활",ref:"Matthew 28:19-20",koRef:"마태복음 28:19-20",ko:"그러므로 너희는 가서 모든 민족을 제자로 삼아 아버지와 아들과 성령의 이름으로 세례를 베풀고 내가 너희에게 분부한 모든 것을 가르쳐 지키게 하라 볼지어다 내가 세상 끝날까지 너희와 항상 함께 있으리라 하시니라"},
+  {book:3,topic:"그리스도를 증거하는 생활",ref:"Matthew 5:16",koRef:"마태복음 5:16",ko:"이같이 너희 빛이 사람 앞에 비치게 하여 그들로 너희 착한 행실을 보고 하늘에 계신 너희 아버지께 영광을 돌리게 하라"},
+  {book:3,topic:"말의 덕을 세우는 사람",ref:"Luke 6:45",koRef:"누가복음 6:45",ko:"선한 사람은 마음에 쌓은 선에서 선을 내고 악한 자는 그 쌓은 악에서 악을 내나니 이는 마음에 가득한 것을 입으로 말함이니라"},
+  {book:3,topic:"말의 덕을 세우는 사람",ref:"Proverbs 15:23",koRef:"잠언 15:23",ko:"사람은 그 입의 대답으로 말미암아 기쁨을 얻나니 때에 맞는 말이 얼마나 아름다운고"},
+  {book:3,topic:"영적 성장과 성숙",ref:"Ephesians 4:13",koRef:"에베소서 4:13",ko:"우리가 다 하나님의 아들을 믿는 것과 아는 일에 하나가 되어 온전한 사람을 이루어 그리스도의 장성한 분량이 충만한 데까지 이르리니"},
+  {book:3,topic:"영적 성장과 성숙",ref:"Philippians 3:12",koRef:"빌립보서 3:12",ko:"내가 이미 얻었다 함도 아니요 온전히 이루었다 함도 아니라 오직 내가 그리스도 예수께 잡힌 바 된 그것을 잡으려고 달려가노라"},
+  {book:3,topic:"순결한 생활",ref:"1 Corinthians 6:19-20",koRef:"고린도전서 6:19-20",ko:"너희 몸은 너희가 하나님께로부터 받은 바 너희 가운데 계신 성령의 전인 줄을 알지 못하느냐 너희는 너희 자신의 것이 아니라 값으로 산 것이 되었으니 그런즉 너희 몸으로 하나님께 영광을 돌리라"},
+  {book:3,topic:"순결한 생활",ref:"2 Timothy 2:22",koRef:"디모데후서 2:22",ko:"또한 너는 청년의 정욕을 피하고 주를 깨끗한 마음으로 부르는 자들과 함께 의와 믿음과 사랑과 화평을 따르라"},
+  {book:3,topic:"그리스도인의 가정생활",ref:"Ephesians 6:1-3",koRef:"에베소서 6:1-3",ko:"자녀들아 주 안에서 너희 부모에게 순종하라 이것이 옳으니라 네 아버지와 어머니를 공경하라 이것은 약속이 있는 첫 계명이니 이로써 네가 잘되고 땅에서 장수하리라"},
+  {book:3,topic:"그리스도인의 가정생활",ref:"Deuteronomy 6:6-7",koRef:"신명기 6:6-7",ko:"오늘 내가 네게 명하는 이 말씀을 너는 마음에 새기고 네 자녀에게 부지런히 가르치며 집에 앉았을 때에든지 길을 갈 때에든지 누워 있을 때에든지 일어날 때에든지 이 말씀을 강론할 것이며"},
+  {book:3,topic:"신앙 인격의 연단",ref:"Psalm 119:71",koRef:"시편 119:71",ko:"고난 당한 것이 내게 유익이라 이로 말미암아 내가 주의 율례들을 배우게 되었나이다"},
+  {book:3,topic:"신앙 인격의 연단",ref:"Romans 8:28",koRef:"로마서 8:28",ko:"우리가 알거니와 하나님을 사랑하는 자 곧 그의 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라"},
+  {book:3,topic:"그리스도의 주재권",ref:"Romans 14:7-8",koRef:"로마서 14:7-8",ko:"우리 중에 누구든지 자기를 위하여 사는 자가 없고 자기를 위하여 죽는 자도 없도다 우리가 살아도 주를 위하여 살고 죽어도 주를 위하여 죽나니 그러므로 사나 죽으나 우리가 주의 것이로다"},
+  {book:3,topic:"그리스도의 주재권",ref:"Revelation 3:20",koRef:"요한계시록 3:20",ko:"볼지어다 내가 문 밖에 서서 두드리노니 누구든지 내 음성을 듣고 문을 열면 내가 그에게로 들어가 그와 더불어 먹고 그는 나와 더불어 먹으리라"},
+  {book:3,topic:"청지기직",ref:"Ephesians 5:15-16",koRef:"에베소서 5:15-16",ko:"그런즉 너희가 어떻게 행할지를 자세히 주의하여 지혜 없는 자 같이 하지 말고 오직 지혜 있는 자 같이 하여 세월을 아끼라 때가 악하니라"},
+  {book:3,topic:"청지기직",ref:"1 Timothy 6:17",koRef:"디모데전서 6:17",ko:"네가 이 세대에서 부한 자들을 명하여 마음을 높이지 말고 정함이 없는 재물에 소망을 두지 말고 오직 우리에게 모든 것을 후히 주사 누리게 하시는 하나님께 두며"},
+  {book:3,topic:"영적 전투",ref:"1 Peter 5:8",koRef:"베드로전서 5:8",ko:"근신하라 깨어라 너희 대적 마귀가 우는 사자 같이 두루 다니며 삼킬 자를 찾나니"},
+  {book:3,topic:"영적 전투",ref:"Ephesians 6:10-11",koRef:"에베소서 6:10-11",ko:"끝으로 너희가 주 안에서와 그 힘의 능력으로 강건하여지고 마귀의 간계를 능히 대적하기 위하여 하나님의 전신 갑주를 입으라"},
+  {book:3,topic:"새 계명: 사랑하라",ref:"John 13:34-35",koRef:"요한복음 13:34-35",ko:"새 계명을 너희에게 주노니 서로 사랑하라 내가 너희를 사랑한 것 같이 너희도 서로 사랑하라 너희가 서로 사랑하면 이로써 모든 사람이 너희가 내 제자인 줄 알리라"},
+  {book:3,topic:"새 계명: 사랑하라",ref:"1 John 3:18",koRef:"요한1서 3:18",ko:"자녀들아 우리가 말과 혀로만 사랑하지 말고 행함과 진실함으로 하자"}
+];
+
+const nirv={"Romans 10:9-10":"Say with your mouth, Jesus is Lord. Believe in your heart that God raised him from the dead. Then you will be saved.","Matthew 16:16":"Simon Peter answered, You are the Messiah, the Son of the living God.","Hebrews 4:16":"So let us boldly approach God's throne of grace. Then we will receive mercy. We will find grace to help us when we need it.","Lamentations 3:22-23":"Because of the Lord's great love we are not consumed, for his compassions never fail. They are new every morning; great is your faithfulness.","Psalm 1:1-2":"Blessed is the person who obeys the law of the Lord. They don't follow the advice of evil people. The law of the Lord gives them joy. They think about his law day and night.","Psalm 119:105":"Your word is like a lamp that shows me the way. It is like a light that guides me.","Romans 1:16":"I am not ashamed of the good news. It is God's power to save everyone who believes.","2 Timothy 3:16":"God has breathed life into all of Scripture. It is useful for teaching us what is true and for training us to do what is right.","Philippians 4:6-7":"Don't worry about anything. Tell God about everything. Ask and pray, and give thanks to him. Then God's peace will watch over your hearts and your minds in Christ Jesus.","Matthew 6:6":"When you pray, go into your room. Close the door and pray to your Father, who can't be seen. He will reward you.","John 15:7":"If you remain joined to me and my words remain in you, ask for anything you wish. And it will be done for you.","Matthew 7:11":"How much more will your Father who is in heaven give good gifts to those who ask him!","2 Peter 1:21":"The Holy Spirit guided the prophets as they spoke. So prophecy comes from God.","Joshua 1:8":"Never stop reading this Scroll of the Law. Day and night you must think about what it says. Then things will go well with you.","Romans 11:36":"All things come from him. All things are directed by him. All things are for his good purposes.","Jeremiah 31:3":"I have loved you with a love that lasts forever. I have kept on loving you with a kindness that never fails.","Hebrews 4:15":"We have a high priest who has been tempted in every way, just as we are. But he did not sin.","John 14:6":"Jesus answered, I am the way and the truth and the life. No one comes to the Father except through me.","John 1:1":"In the beginning, the Word was already there. The Word was with God, and the Word was God.","2 Corinthians 13:13":"May the grace of the Lord Jesus Christ, and the love of God, and the sharing together that comes from the Holy Spirit be with you all.","Romans 5:12":"Sin came into the world because one man sinned. And death came because of sin. Everyone sinned, so death came to all people.","Hebrews 9:27":"People have to die once. After that, God will judge them.","Romans 5:8":"While we were still sinners, Christ died for us.","Galatians 3:13":"Christ set us free from the curse of the law by becoming a curse for us.","Romans 4:25":"Jesus was raised to life in order to make us right with God.","Galatians 2:20":"I have been crucified with Christ. Christ lives in me. He loved me and gave himself for me.","Acts 2:38":"Turn away from your sins and be baptized in the name of Jesus Christ. You will receive the gift of the Holy Spirit.","1 Corinthians 12:13":"We were all baptized by one Holy Spirit. And so we are formed into one body.","Titus 3:5":"He saved us by washing away our sins. The Holy Spirit gave us new life.","1 Thessalonians 1:3-4":"We remember your work that comes from love. Brothers and sisters, you are loved by God. We know that he has chosen you.","Ephesians 2:8-9":"God's grace has saved you because of your faith in Christ. It is God's gift. No one can brag about earning it.","Romans 4:18":"Abraham kept hoping. He believed that he would become the father of many nations.","Romans 3:21-22":"We are made right with God by putting our faith in Jesus Christ. This happens to all who believe.","Romans 8:32":"God did not spare his own Son. He gave him up for us all.","Romans 8:26":"The Holy Spirit himself prays for us through groans that cannot be expressed in words.","Galatians 5:22-23":"The fruit the Holy Spirit produces is love, joy and peace. It is being patient, kind and good. It is being faithful and gentle and having control of oneself.","2 Corinthians 7:1":"Let us make ourselves pure from everything that pollutes our body and spirit. We want to honor God.","1 John 3:3":"All those who have this hope in him make themselves pure. They become as pure as Christ is pure.","Revelation 22:7":"Look! I am coming soon! Blessed is the person who obeys the words of the prophecy written in this scroll.","1 Thessalonians 4:16-17":"The Lord himself will come down from heaven. We will meet the Lord in the air. And we will be with him forever.","Matthew 7:24":"Everyone who hears my words and puts them into practice is like a wise man who builds his house on the rock.","John 14:21":"Whoever has my commands and keeps them is the one who loves me. The one who loves me will be loved by my Father.","Philippians 2:3-4":"Be humble. Value others more than yourselves. Each of you should also look out for the good of others.","1 Peter 4:11":"Does anyone speak? They should do it as if they were speaking God's very words.","Matthew 28:19-20":"Go and make disciples of all nations. Baptize them in the name of the Father and of the Son and of the Holy Spirit. I am always with you, to the very end.","Matthew 5:16":"Let your light shine so others can see it. They will bring glory to your Father who is in heaven.","Luke 6:45":"A good person says good things from the good stored up in their heart. A person's mouth says everything that is in their heart.","Proverbs 15:23":"A person finds joy in giving the right answer. And how good is a timely word!","Ephesians 4:13":"We will all become one in the faith. We will become mature, just as Christ is.","Philippians 3:12":"I keep going forward to try to take hold of that for which Christ Jesus took hold of me.","1 Corinthians 6:19-20":"Your bodies are temples of the Holy Spirit. You do not belong to yourselves. So use your bodies in a way that honors God.","2 Timothy 2:22":"Turn away from the evil things that young people long for. Have faith, love and peace.","Ephesians 6:1-3":"Children, obey your parents as believers in the Lord. Honor your father and mother. If you honor your father and mother, things will go well with you.","Deuteronomy 6:6-7":"Always remember the commandments I give you today. Teach them to your children. Talk about them at home and when you walk along the road.","Psalm 119:71":"It was good for me to suffer. That helped me understand your orders.","Romans 8:28":"In all things God works for the good of those who love him.","Romans 14:7-8":"If we live, we live for the Lord. And if we die, we die for the Lord. So whether we live or die, we belong to the Lord.","Revelation 3:20":"I stand at the door and knock. If any of you hears my voice and opens the door, I will come in and eat with you.","Ephesians 5:15-16":"Live like people who are wise. Make the most of every opportunity. The days are evil.","1 Timothy 6:17":"Tell rich people to put their hope in God. He richly provides us with everything to enjoy.","1 Peter 5:8":"Be watchful. Your enemy the devil is like a roaring lion. He prowls around looking for someone to swallow up.","Ephesians 6:10-11":"Let the Lord make you strong. Put on all of God's armor to stand firm against the devil's evil plans.","John 13:34-35":"Love one another, just as I have loved you. If you love one another, everyone will know you are my disciples.","1 John 3:18":"Don't just talk about love. Put your love into action."};
+
+const niv={"Romans 10:9-10":"If you declare with your mouth, Jesus is Lord, and believe in your heart that God raised him from the dead, you will be saved. For it is with your heart that you believe and are justified, and it is with your mouth that you profess your faith and are saved.","Matthew 16:16":"Simon Peter answered, You are the Messiah, the Son of the living God.","Hebrews 4:16":"Let us then approach God's throne of grace with confidence, so that we may receive mercy and find grace to help us in our time of need.","Lamentations 3:22-23":"Because of the Lord's great love we are not consumed, for his compassions never fail. They are new every morning; great is your faithfulness.","Psalm 1:1-2":"Blessed is the one who does not walk in step with the wicked or stand in the way that sinners take or sit in the company of mockers, but whose delight is in the law of the Lord, and who meditates on his law day and night.","Psalm 119:105":"Your word is a lamp for my feet, a light on my path.","Romans 1:16":"For I am not ashamed of the gospel, because it is the power of God that brings salvation to everyone who believes.","2 Timothy 3:16":"All Scripture is God-breathed and is useful for teaching, rebuking, correcting and training in righteousness.","Philippians 4:6-7":"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.","Matthew 6:6":"But when you pray, go into your room, close the door and pray to your Father, who is unseen. Then your Father, who sees what is done in secret, will reward you.","John 15:7":"If you remain in me and my words remain in you, ask whatever you wish, and it will be done for you.","Matthew 7:11":"How much more will your Father in heaven give good gifts to those who ask him!","2 Peter 1:21":"For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit.","Joshua 1:8":"Keep this Book of the Law always on your lips; meditate on it day and night, so that you may be careful to do everything written in it. Then you will be prosperous and successful.","Romans 11:36":"For from him and through him and for him are all things. To him be the glory forever! Amen.","Jeremiah 31:3":"I have loved you with an everlasting love; I have drawn you with unfailing kindness.","Hebrews 4:15":"For we do not have a high priest who is unable to empathize with our weaknesses, but we have one who has been tempted in every way, just as we are, yet he did not sin.","John 14:6":"Jesus answered, I am the way and the truth and the life. No one comes to the Father except through me.","John 1:1":"In the beginning was the Word, and the Word was with God, and the Word was God.","2 Corinthians 13:13":"May the grace of the Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit be with you all.","Romans 5:12":"Just as sin entered the world through one man, and death through sin, and in this way death came to all people, because all sinned.","Hebrews 9:27":"Just as people are destined to die once, and after that to face judgment.","Romans 5:8":"But God demonstrates his own love for us in this: While we were still sinners, Christ died for us.","Galatians 3:13":"Christ redeemed us from the curse of the law by becoming a curse for us.","Romans 4:25":"He was delivered over to death for our sins and was raised to life for our justification.","Galatians 2:20":"I have been crucified with Christ and I no longer live, but Christ lives in me. The life I now live in the body, I live by faith in the Son of God, who loved me and gave himself for me.","Acts 2:38":"Peter replied, Repent and be baptized, every one of you, in the name of Jesus Christ for the forgiveness of your sins. And you will receive the gift of the Holy Spirit.","1 Corinthians 12:13":"For we were all baptized by one Spirit so as to form one body, and we were all given the one Spirit to drink.","Titus 3:5":"He saved us, not because of righteous things we had done, but because of his mercy. He saved us through the washing of rebirth and renewing by the Holy Spirit.","1 Thessalonians 1:3-4":"We remember before our God and Father your work produced by faith, your labor prompted by love. For we know, brothers and sisters loved by God, that he has chosen you.","Ephesians 2:8-9":"For it is by grace you have been saved, through faith, and this is not from yourselves, it is the gift of God, not by works, so that no one can boast.","Romans 4:18":"Against all hope, Abraham in hope believed and so became the father of many nations.","Romans 3:21-22":"But now apart from the law the righteousness of God has been made known. This righteousness is given through faith in Jesus Christ to all who believe.","Romans 8:32":"He who did not spare his own Son, but gave him up for us all, how will he not also graciously give us all things?","Romans 8:26":"The Spirit helps us in our weakness. The Spirit himself intercedes for us through wordless groans.","Galatians 5:22-23":"But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control. Against such things there is no law.","2 Corinthians 7:1":"Let us purify ourselves from everything that contaminates body and spirit, perfecting holiness out of reverence for God.","1 John 3:3":"All who have this hope in him purify themselves, just as he is pure.","Revelation 22:7":"Look, I am coming soon! Blessed is the one who keeps the words of the prophecy written in this scroll.","1 Thessalonians 4:16-17":"The Lord himself will come down from heaven, and the dead in Christ will rise first. After that, we will be caught up together with them to meet the Lord in the air. And so we will be with the Lord forever.","Matthew 7:24":"Everyone who hears these words of mine and puts them into practice is like a wise man who built his house on the rock.","John 14:21":"Whoever has my commands and keeps them is the one who loves me. The one who loves me will be loved by my Father.","Philippians 2:3-4":"In humility value others above yourselves, not looking to your own interests but each of you to the interests of the others.","1 Peter 4:11":"If anyone speaks, they should do so as one who speaks the very words of God.","Matthew 28:19-20":"Go and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit. Surely I am with you always, to the very end of the age.","Matthew 5:16":"Let your light shine before others, that they may see your good deeds and glorify your Father in heaven.","Luke 6:45":"A good man brings good things out of the good stored up in his heart. For the mouth speaks what the heart is full of.","Proverbs 15:23":"A person finds joy in giving an apt reply, and how good is a timely word!","Ephesians 4:13":"Until we all reach unity in the faith and become mature, attaining to the whole measure of the fullness of Christ.","Philippians 3:12":"I press on to take hold of that for which Christ Jesus took hold of me.","1 Corinthians 6:19-20":"Your bodies are temples of the Holy Spirit. You are not your own; you were bought at a price. Therefore honor God with your bodies.","2 Timothy 2:22":"Flee the evil desires of youth and pursue righteousness, faith, love and peace.","Ephesians 6:1-3":"Children, obey your parents in the Lord. Honor your father and mother, which is the first commandment with a promise, so that it may go well with you and that you may enjoy long life on the earth.","Deuteronomy 6:6-7":"These commandments are to be on your hearts. Impress them on your children. Talk about them when you sit at home and when you walk along the road.","Psalm 119:71":"It was good for me to be afflicted so that I might learn your decrees.","Romans 8:28":"In all things God works for the good of those who love him, who have been called according to his purpose.","Romans 14:7-8":"If we live, we live for the Lord; and if we die, we die for the Lord. So, whether we live or die, we belong to the Lord.","Revelation 3:20":"Here I am! I stand at the door and knock. If anyone hears my voice and opens the door, I will come in and eat with that person.","Ephesians 5:15-16":"Be very careful, then, how you live, not as unwise but as wise, making the most of every opportunity.","1 Timothy 6:17":"Put your hope in God, who richly provides us with everything for our enjoyment.","1 Peter 5:8":"Be sober-minded; be watchful. Your adversary the devil prowls around like a roaring lion, seeking someone to devour.","Ephesians 6:10-11":"Be strong in the Lord and in his mighty power. Put on the full armor of God, so that you can take your stand against the devil's schemes.","John 13:34-35":"A new command I give you: Love one another. As I have loved you, so you must love one another. By this everyone will know that you are my disciples.","1 John 3:18":"Let us not love with words or speech but with actions and in truth."};
+
+const bookColor={1:'ref-1',2:'ref-2',3:'ref-3'};
+const tagClass={1:'tag-1',2:'tag-2',3:'tag-3'};
+const progClass={1:'prog-1',2:'prog-2',3:'prog-3'};
+let currentLang='ko',allFilter='all';
+let flashFilter='all',flashList=[...verses],flashIdx=0,flashRevealed=false;
+let quizList=[],quizIdx=0,quizScore=0,currentBlankIdx=0,filledAnswers=[];
+let synth=window.speechSynthesis,globalPlaying=false,globalIdx=0,globalSpeed=1.2,loopVerseIdx=-1;
+let voices=[];
+function loadVoices(){voices=synth.getVoices();}
+loadVoices();
+if(speechSynthesis.onvoiceschanged!==undefined)speechSynthesis.onvoiceschanged=loadVoices;
+
+function getRef(v){return currentLang==='ko'?v.koRef:v.ref;}
+function getText(v){if(currentLang==='ko')return v.ko;if(currentLang==='nirv')return nirv[v.ref]||v.ko;return niv[v.ref]||v.ko;}
+function getLangBadge(){if(currentLang==='ko')return '';return `<span class="ver-badge">${currentLang.toUpperCase()}</span>`;}
+
+function toSinoKorean(n){
+  const num=parseInt(n,10);
+  if(isNaN(num))return n;
+  if(num===0)return '영';
+  const units=['','일','이','삼','사','오','육','칠','팔','구'];
+  const places=['','십','백','천'];
+  let result='';
+  const digits=String(num).split('').reverse();
+  for(let i=digits.length-1;i>=0;i--){
+    const d=parseInt(digits[i]);
+    if(d===0)continue;
+    const unit=(d===1&&i>0)?'':units[d];
+    result+=unit+places[i];
+  }
+  return result||'영';
+}
+function getTTSRef(v){
+  const isKo=currentLang==='ko';
+  if(isKo){
+    const koRef=v.koRef;
+    const spaceIdx=koRef.lastIndexOf(' ');
+    const bookName=koRef.slice(0,spaceIdx);
+    const chapVerse=koRef.slice(spaceIdx+1);
+    const colonIdx=chapVerse.indexOf(':');
+    const chap=chapVerse.slice(0,colonIdx);
+    const versePart=chapVerse.slice(colonIdx+1);
+    const chapKo=toSinoKorean(chap);
+    const dashIdx=versePart.indexOf('-');
+    if(dashIdx!==-1){
+      const vStart=toSinoKorean(versePart.slice(0,dashIdx));
+      const vEnd=toSinoKorean(versePart.slice(dashIdx+1));
+      return `${bookName} ${chapKo}장 ${vStart}절부터 ${vEnd}절`;
+    }
+    return `${bookName} ${chapKo}장 ${toSinoKorean(versePart)}절`;
+  } else {
+    const ref=v.ref;
+    const colonIdx=ref.indexOf(':');
+    const bookChap=ref.slice(0,colonIdx);
+    const versePart=ref.slice(colonIdx+1);
+    const lastSpace=bookChap.lastIndexOf(' ');
+    const bookName=bookChap.slice(0,lastSpace);
+    const chap=bookChap.slice(lastSpace+1);
+    const dashIdx=versePart.indexOf('-');
+    if(dashIdx!==-1){
+      const vStart=versePart.slice(0,dashIdx);
+      const vEnd=versePart.slice(dashIdx+1);
+      return `${bookName}, chapter ${chap}, verse ${vStart} through ${vEnd}`;
+    }
+    return `${bookName}, chapter ${chap}, verse ${versePart}`;
+  }
+}
+
+function getBestVoice(lang){
+  const isKo=lang==='ko';
+  const pref=voices.filter(v=>isKo?v.lang.startsWith('ko'):v.lang.startsWith('en'));
+  return pref[0]||voices[0]||null;
+}
+function speak(text,lang,rate,onEnd){
+  synth.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  const voice=getBestVoice(lang);
+  if(voice)u.voice=voice;
+  u.lang=lang==='ko'?'ko-KR':'en-US';
+  u.rate=rate||1;
+  if(onEnd)u.onend=onEnd;
+  synth.speak(u);return u;
+}
+function stopAll(){synth.cancel();globalPlaying=false;loopVerseIdx=-1;updateGlobalBtn();clearAllLoopHighlights();}
+function clearAllLoopHighlights(){
+  document.querySelectorAll('.inline-play.looping').forEach(b=>{b.classList.remove('looping');b.innerHTML=playIconSVG();});
+  document.querySelectorAll('.verse-card.playing-loop').forEach(c=>c.classList.remove('playing-loop'));
+  document.querySelectorAll('.verse-text.highlight-playing').forEach(t=>t.classList.remove('highlight-playing'));
+}
+const playIconSVG=()=>`<svg viewBox="0 0 12 12" width="11" height="11" fill="#888"><path d="M2 1.5l8 4.5-8 4.5z"/></svg>`;
+const loopIconSVG=()=>`<svg viewBox="0 0 12 12" width="11" height="11"><path d="M2 4h7.5M9.5 4l-2-2M9.5 4l-2 2M10 8H2.5M2.5 8l2 2M2.5 8l2-2" stroke="#1D9E75" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`;
+function updateGlobalBtn(){
+  const icon=document.getElementById('gp-icon');
+  if(!icon)return;
+  icon.innerHTML=globalPlaying?'<rect x="3" y="2" width="3" height="12"/><rect x="10" y="2" width="3" height="12"/>':'<path d="M4 2l10 6-10 6z"/>';
+}
+function toggleGlobal(){
+  if(globalPlaying){synth.cancel();globalPlaying=false;updateGlobalBtn();clearAllLoopHighlights();}
+  else{loopVerseIdx=-1;clearAllLoopHighlights();globalPlaying=true;updateGlobalBtn();playGlobalNext();}
+}
+function playGlobalNext(){
+  if(!globalPlaying||globalIdx>=verses.length){
+    globalPlaying=false;globalIdx=0;updateGlobalBtn();
+    document.getElementById('gp-title').textContent=currentLang==='ko'?'전체 순서대로 읽기':'Read all in order';
+    document.getElementById('gp-sub').textContent=currentLang==='ko'?'재생이 완료되었습니다':'Playback complete';
+    document.getElementById('gp-counter').textContent='64 / 64';return;
+  }
+  const v=verses[globalIdx];
+  document.getElementById('gp-title').textContent=getRef(v);
+  document.getElementById('gp-sub').textContent=v.topic;
+  document.getElementById('gp-counter').textContent=`${globalIdx+1} / 64`;
+  speak(getTTSRef(v)+'. '+getText(v),currentLang,globalSpeed,()=>{globalIdx++;if(globalPlaying)playGlobalNext();});
+}
+function globalSkip(dir){
+  synth.cancel();
+  globalIdx=Math.max(0,Math.min(verses.length-1,globalIdx+dir));
+  if(globalPlaying)playGlobalNext();
+  else{const v=verses[globalIdx];document.getElementById('gp-title').textContent=getRef(v);document.getElementById('gp-sub').textContent=v.topic;document.getElementById('gp-counter').textContent=`${globalIdx+1} / 64`;}
+}
+function setSpeed(s,el){
+  globalSpeed=s;document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');
+  if(globalPlaying){synth.cancel();playGlobalNext();}
+}
+function toggleLoop(idx,btnEl){
+  if(loopVerseIdx===idx){synth.cancel();loopVerseIdx=-1;clearAllLoopHighlights();return;}
+  if(globalPlaying){globalPlaying=false;updateGlobalBtn();}
+  synth.cancel();clearAllLoopHighlights();loopVerseIdx=idx;
+  const card=document.getElementById('vcard-'+idx);
+  const vtxt=document.getElementById('vtxt-'+idx);
+  if(card)card.classList.add('playing-loop');
+  if(vtxt)vtxt.classList.add('highlight-playing');
+  btnEl.classList.add('looping');btnEl.innerHTML=loopIconSVG();
+  playLoopVerse(idx,btnEl);
+}
+function playLoopVerse(idx,btnEl){
+  if(loopVerseIdx!==idx)return;
+  const v=verses[idx];
+  speak(getTTSRef(v)+'. '+getText(v),currentLang,globalSpeed,()=>{if(loopVerseIdx===idx)playLoopVerse(idx,btnEl);});
+}
+function inlineBtn(idx){return `<button class="inline-play" id="ibtn-${idx}" onclick="toggleLoop(${idx},this)">${playIconSVG()}</button>`;}
+
+function switchLang(lang){
+  currentLang=lang;
+  ['ko','nirv','niv'].forEach(l=>document.getElementById('btn-'+l).classList.toggle('active',l===lang));
+  stopAll();// 초기 렌더는 로그인 후 loginUser()에서 실행
+  document.getElementById('gp-title').textContent=currentLang==='ko'?'전체 순서대로 읽기':'Read all in order';
+  document.getElementById('gp-sub').textContent=currentLang==='ko'?'재생 버튼을 눌러 시작하세요':'Press play to begin';
+}
+function filterAll(val,el){
+  allFilter=val;document.querySelectorAll('#page-all .badge').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderAll();
+}
+function renderAll(){
+  const list=document.getElementById('all-list');
+  let filtered;
+  if(allFilter==='memorizing') filtered=verses.filter((_,i)=>userStatuses[i]==='memorizing');
+  else if(allFilter==='done') filtered=verses.filter((_,i)=>userStatuses[i]==='done');
+  else if(['1','2','3'].includes(allFilter)) filtered=verses.filter(v=>v.book==allFilter);
+  else filtered=verses;
+  if(filtered.length===0){
+    list.innerHTML='<div class="empty-state" style="text-align:center;padding:3rem 1rem;color:#888;font-size:14px">'+(allFilter==='memorizing'?'암송 중인 구절이 없어요. 구절 카드의 ✓ 버튼으로 추가해보세요.':allFilter==='done'?'암송 완료한 구절이 없어요!':'표시할 구절이 없어요.')+'</div>';
+    return;
+  }
+  list.innerHTML=filtered.map(v=>{
+    const gi=verses.indexOf(v);
+    return `<div class="verse-card${getStatusClass(gi)}" id="vcard-${gi}">
+      <div class="verse-card-top">
+        <div class="verse-meta">
+          <div class="verse-topic">${v.topic}<span class="ref-tag ${tagClass[v.book]}">${v.book}권</span>${getLangBadge()}${getStatusPip(gi)}</div>
+          <div class="verse-ref ${bookColor[v.book]}">${getRef(v)}</div>
+        </div>
+        <div class="card-actions">${currentUser?memBtnHTML(gi):''}${inlineBtn(gi)}</div>
+      </div>
+      <div class="verse-text" id="vtxt-${gi}">${getText(v)}</div>
+    </div>`;
+  }).join('');
+}
+function renderCategory(){
+  const list=document.getElementById('cat-list');
+  const topics={};
+  verses.forEach((v,i)=>{if(!topics[v.topic])topics[v.topic]={book:v.book,items:[]};topics[v.topic].items.push({v,i});});
+  list.innerHTML=Object.entries(topics).map(([topic,data])=>`
+    <div style="margin-bottom:1.5rem">
+      <div class="section-title"><span>${topic}</span><span class="ref-tag ${tagClass[data.book]}">${data.book}권</span>${getLangBadge()}</div>
+      ${data.items.map(({v,i})=>`
+        <div class="verse-card${getStatusClass(i)}" id="vcard-c-${i}">
+          <div class="verse-card-top">
+            <div class="verse-meta"><div class="verse-ref ${bookColor[v.book]}">${getRef(v)}${getStatusPip(i)}</div></div>
+            <div class="card-actions">${currentUser?memBtnHTML(i):''}${inlineBtn(i)}</div>
+          </div>
+          <div class="verse-text" id="vtxt-${i}">${getText(v)}</div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+function filterFlash(val,el){
+  flashFilter=val;document.querySelectorAll('#page-flash .badge').forEach(b=>b.classList.remove('active'));el.classList.add('active');
+  if(val==='memorizing') flashList=verses.filter((_,i)=>userStatuses[i]==='memorizing');
+  else if(val==='done') flashList=verses.filter((_,i)=>userStatuses[i]==='done');
+  else if(['1','2','3'].includes(val)) flashList=verses.filter(v=>v.book==val);
+  else flashList=[...verses];
+  flashIdx=0;flashRevealed=false;
+  if(flashList.length===0){
+    document.getElementById('flash-topic').textContent='표시할 구절이 없어요';
+    document.getElementById('flash-ref').textContent='';
+    document.getElementById('flash-front').textContent='';
+    document.getElementById('flash-back').textContent='';
+    document.getElementById('flash-hint').textContent='';
+    document.getElementById('flash-counter').textContent='0 / 0';
+    return;
+  }
+  renderFlash();
+}
+function renderFlash(){
+  if(!flashList.length)return;
+  const v=flashList[flashIdx];
+  document.getElementById('flash-topic').textContent=v.topic;
+  document.getElementById('flash-ref').className='flash-ref '+bookColor[v.book];
+  document.getElementById('flash-ref').innerHTML=getRef(v)+(currentLang!=='ko'?getLangBadge():'');
+  document.getElementById('flash-front').textContent=getRef(v);
+  document.getElementById('flash-back').textContent=getText(v);
+  document.getElementById('flash-back').style.display='none';
+  document.getElementById('flash-front').style.display='block';
+  document.getElementById('flash-hint').textContent=currentLang==='ko'?'탭하면 말씀이 나타납니다':'Tap to reveal the verse';
+  document.getElementById('flash-counter').textContent=`${flashIdx+1} / ${flashList.length}`;
+  const pct=Math.round((flashIdx+1)/flashList.length*100);
+  const prog=document.getElementById('flash-prog');
+  prog.style.width=pct+'%';prog.className='progress-fill '+(flashFilter==='all'?'prog-1':progClass[flashFilter]);
+  document.getElementById('fl-prev').disabled=flashIdx===0;
+  document.getElementById('fl-next').disabled=flashIdx===flashList.length-1;
+  flashRevealed=false;
+}
+function toggleFlash(){
+  flashRevealed=!flashRevealed;
+  document.getElementById('flash-front').style.display=flashRevealed?'none':'block';
+  document.getElementById('flash-back').style.display=flashRevealed?'block':'none';
+  document.getElementById('flash-hint').textContent=flashRevealed?(currentLang==='ko'?'탭하면 참조로 돌아갑니다':'Tap to go back'):(currentLang==='ko'?'탭하면 말씀이 나타납니다':'Tap to reveal the verse');
+  if(flashRevealed)speak(getTTSRef(flashList[flashIdx])+'. '+getText(flashList[flashIdx]),currentLang,globalSpeed);
+  else synth.cancel();
+}
+function flashNav(dir){synth.cancel();flashIdx=Math.max(0,Math.min(flashList.length-1,flashIdx+dir));renderFlash();}
+
+const koKw={"Romans 10:9-10":["구원","시인","믿으면","마음"],"Matthew 16:16":["그리스도","하나님","아들"],"Hebrews 4:16":["긍휼","은혜","보좌","담대히"],"Psalm 1:1-2":["복","묵상","율법","주야로"],"Psalm 119:105":["등","빛","말씀"],"Philippians 4:6-7":["염려","기도","평강","감사"],"John 15:7":["거하고","원하는","이루리라"],"John 14:6":["길","진리","생명"],"Romans 5:8":["죄인","사랑","죽으심"],"Galatians 2:20":["십자가","그리스도","믿음"],"Ephesians 2:8-9":["은혜","믿음","구원","선물"],"Galatians 5:22-23":["사랑","희락","화평","절제"],"Romans 8:28":["합력","선","사랑하는"],"John 13:34-35":["사랑하라","제자","계명"],"Matthew 28:19-20":["제자","세례","민족","함께"],"1 Peter 5:8":["마귀","사자","근신"],"Ephesians 6:10-11":["강건","전신갑주","대적"],"Romans 8:26":["성령","연약","탄식","간구"]};
+const enKw={"Romans 10:9-10":["declare","believe","saved","mouth"],"Hebrews 4:16":["confidence","mercy","grace","throne"],"Psalm 1:1-2":["Blessed","meditates","delight","day and night"],"Psalm 119:105":["lamp","light","word","path"],"Philippians 4:6-7":["anxious","prayer","peace","thanksgiving"],"John 15:7":["remain","ask","wish","done"],"John 14:6":["way","truth","life","Father"],"Romans 5:8":["sinners","Christ","died","love"],"Galatians 2:20":["crucified","Christ lives","faith","Son of God"],"Ephesians 2:8-9":["grace","faith","saved","gift"],"Galatians 5:22-23":["love","joy","peace","self-control"],"Romans 8:28":["all things","good","love","called"],"John 13:34-35":["love","command","disciples","one another"],"Matthew 28:19-20":["disciples","nations","baptizing","always"],"1 Peter 5:8":["sober","watchful","devil","lion"],"Ephesians 6:10-11":["strong","armor","God","devil"],"Romans 8:26":["Spirit","weakness","intercedes","groans"]};
+function getKeywords(v){
+  if(currentLang==='ko'){const kw=koKw[v.ref];if(kw)return kw;const words=v.ko.split(/\s+/).filter(w=>w.length>=2);const ch=[];const st=Math.floor(words.length/3);for(let i=0;i<3&&i*st<words.length;i++)ch.push(words[i*st].replace(/[,\.]/g,''));return ch.slice(0,3);}
+  const kw=enKw[v.ref];if(kw)return kw;const words=getText(v).split(/\s+/).filter(w=>w.length>=3);const ch=[];const st=Math.floor(words.length/3);for(let i=0;i<3&&i*st<words.length;i++)ch.push(words[i*st].replace(/[,\.;:'"]/g,''));return ch.slice(0,3);
+}
+function initQuiz(){quizList=[...verses].sort(()=>Math.random()-0.5).slice(0,10);quizIdx=0;quizScore=0;renderQuiz();}
+function renderQuiz(){
+  const c=document.getElementById('quiz-container');
+  if(quizIdx>=quizList.length){
+    const pct=Math.round(quizScore/quizList.length*100);
+    const msgs=currentLang==='ko'?['훌륭합니다!','잘 하셨어요!','계속 연습하세요!']:['Excellent!','Good job!','Keep practicing!'];
+    c.innerHTML=`<div class="quiz-result"><div class="quiz-score">${quizScore}/${quizList.length} (${pct}%)</div><div class="quiz-msg">${pct>=80?msgs[0]:pct>=50?msgs[1]:msgs[2]}</div><button class="btn-primary" onclick="initQuiz()">${currentLang==='ko'?'다시 풀기':'Try Again'}</button></div>`;return;
+  }
+  const v=quizList[quizIdx];const keywords=getKeywords(v);
+  filledAnswers=new Array(keywords.length).fill(null);currentBlankIdx=0;
+  let displayText=getText(v);
+  keywords.forEach((kw,i)=>{displayText=displayText.replace(kw,`<span class="blank" id="blank-${i}" onclick="clickBlank(${i})" style="min-width:${Math.max(60,kw.length*9)}px">&nbsp;&nbsp;&nbsp;</span>`);});
+  const dp=currentLang==='ko'?["하나님","예수","성령","믿음","사랑","구원","기도","은혜","말씀","생명"]:["faith","love","grace","truth","peace","light","Spirit","prayer","salvation","righteous"];
+  const decoys=dp.filter(w=>!keywords.includes(w)).sort(()=>Math.random()-0.5).slice(0,3);
+  const allPieces=[...keywords,...decoys].sort(()=>Math.random()-0.5);
+  c.innerHTML=`<div class="quiz-info">${quizIdx+1} / ${quizList.length} · ${currentLang==='ko'?'점수':'Score'}: ${quizScore}</div>
+    <div class="verse-card" style="margin-bottom:12px"><div style="font-size:11px;color:#888;margin-bottom:4px">${v.topic}</div><div class="verse-ref ${bookColor[v.book]}">${getRef(v)} ${getLangBadge()}</div></div>
+    <div class="quiz-verse-area">${displayText}</div>
+    <div style="font-size:12px;color:#888;margin-bottom:8px">${currentLang==='ko'?'빈칸에 들어갈 단어를 골라 채우세요':'Choose the words that belong in the blanks'}</div>
+    <div class="piece-pool" id="piece-pool">${allPieces.map((p,i)=>`<span class="piece" id="piece-${i}" onclick="clickPiece(${i},'${p.replace(/'/g,"\\'")}')">${p}</span>`).join('')}</div>
+    <div class="correct-msg" id="correct-msg"></div>`;
+  setTimeout(()=>{const b=document.getElementById('blank-0');if(b)b.style.background='#E6F1FB';},50);
+}
+function clickBlank(idx){currentBlankIdx=idx;document.querySelectorAll('.blank').forEach(b=>b.style.background='');const el=document.getElementById('blank-'+idx);if(el&&!el.classList.contains('filled'))el.style.background='#E6F1FB';}
+function clickPiece(i,word){
+  const v=quizList[quizIdx];const keywords=getKeywords(v);
+  const blankEl=document.getElementById('blank-'+currentBlankIdx);if(!blankEl||blankEl.classList.contains('filled'))return;
+  const pieceEl=document.getElementById('piece-'+i);if(!pieceEl||pieceEl.classList.contains('used'))return;
+  const correct=keywords[currentBlankIdx];const msg=document.getElementById('correct-msg');
+  if(word===correct){
+    blankEl.textContent=word;blankEl.classList.add('filled');blankEl.style.background='';blankEl.onclick=null;
+    pieceEl.classList.add('used');filledAnswers[currentBlankIdx]=word;
+    msg.textContent=currentLang==='ko'?'정답! ✓':'Correct! ✓';msg.style.color='#1D9E75';
+    if(filledAnswers.every(a=>a!==null)){quizScore++;setTimeout(()=>{quizIdx++;renderQuiz();},700);}
+    else{let next=(currentBlankIdx+1)%keywords.length;while(filledAnswers[next]!==null)next=(next+1)%keywords.length;currentBlankIdx=next;document.querySelectorAll('.blank').forEach(b=>b.style.background='');const nb=document.getElementById('blank-'+next);if(nb&&!nb.classList.contains('filled'))nb.style.background='#E6F1FB';}
+  }else{
+    blankEl.classList.add('wrong');msg.textContent=currentLang==='ko'?'틀렸어요. 다시 시도해보세요.':'Wrong. Try again.';msg.style.color='#E24B4A';
+    setTimeout(()=>blankEl.classList.remove('wrong'),400);
+  }
+}
+function showPage(name,e){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(e&&e.target)e.target.classList.add('active');
+  if(name==='quiz'&&quizList.length===0)initQuiz();
+}
+renderAll();renderCategory();renderFlash();
+
+var praiseOn=false, praiseExpanded=false;
+const PRAISE_SRC='https://www.youtube.com/embed/jydGb5W13Y4?autoplay=1&mute=0';
+
+function togglePraise(){
+  praiseOn=!praiseOn;
+  const iframe=document.getElementById('praise-iframe');
+  const btn=document.getElementById('praise-btn');
+  if(praiseOn){
+    iframe.src=PRAISE_SRC;
+    btn.textContent='정지';
+    btn.classList.add('playing');
+    if(praiseExpanded) iframe.classList.add('visible');
+  } else {
+    iframe.src='';
+    btn.textContent='재생';
+    btn.classList.remove('playing');
+    iframe.classList.remove('visible');
+    praiseExpanded=false;
+    document.getElementById('praise-expand-btn').textContent='화면 보기';
+  }
+}
+
+function togglePraiseExpand(){
+  const iframe=document.getElementById('praise-iframe');
+  const btn=document.getElementById('praise-expand-btn');
+  if(!praiseOn){togglePraise();return;}
+  praiseExpanded=!praiseExpanded;
+  iframe.classList.toggle('visible', praiseExpanded);
+  btn.textContent=praiseExpanded?'화면 닫기':'화면 보기';
+}
+
+
+// ===== FIREBASE 초기화 =====
+var db = null;
+var firebaseConfig = {
+  apiKey: "AIzaSyA61yH7aqxM-TnoXgWTo0QHAOtDAYYwDQM",
+  authDomain: "bible2joo.firebaseapp.com",
+  databaseURL: "https://bible2joo-default-rtdb.firebaseio.com",
+  projectId: "bible2joo",
+  storageBucket: "bible2joo.firebasestorage.app",
+  messagingSenderId: "126612454661",
+  appId: "1:126612454661:web:59fa22d2775eacaae18b6c"
+};
+window.addEventListener('load', function(){
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    console.log('Firebase 초기화 완료');
+  } catch(e) {
+    console.error('Firebase 초기화 실패:', e);
+  }
+});
+
+// ===== AUTH (Firebase Realtime DB 기반) =====
+var authMode='login', currentUser=null, userStatuses={};
+
+function toggleAuthMode(){
+  authMode=authMode==='login'?'register':'login';
+  document.getElementById('auth-title').textContent=authMode==='login'?'로그인':'회원가입';
+  document.getElementById('auth-sub').textContent=authMode==='login'?'이름과 비밀번호 4자리를 입력하세요':'이름과 비밀번호 4자리를 설정하세요';
+  document.getElementById('auth-pw2-wrap').style.display=authMode==='register'?'block':'none';
+  document.getElementById('auth-submit-btn').textContent=authMode==='login'?'로그인':'가입하기';
+  document.getElementById('auth-toggle').innerHTML=authMode==='login'
+    ?'계정이 없으신가요? <span onclick="toggleAuthMode()">가입하기</span>'
+    :'이미 계정이 있으신가요? <span onclick="toggleAuthMode()">로그인</span>';
+  document.getElementById('auth-err').style.display='none';
+}
+
+function showAuthErr(msg){var e=document.getElementById('auth-err');e.textContent=msg;e.style.display='block';}
+function setAuthLoading(on){
+  var btn=document.getElementById('auth-submit-btn');
+  btn.disabled=on;
+  btn.textContent=on?'처리 중...':(authMode==='login'?'로그인':'가입하기');
+}
+
+function doAuth(){
+  var name=document.getElementById('auth-name').value.trim();
+  var pw=document.getElementById('auth-pw').value.trim();
+  if(!name){showAuthErr('이름을 입력하세요.');return;}
+  if(!/^\d{4}$/.test(pw)){showAuthErr('비밀번호는 숫자 4자리여야 합니다.');return;}
+  if(!db){showAuthErr('Firebase 연결 중입니다. 잠시 후 다시 시도해주세요.');return;}
+  setAuthLoading(true);
+
+  // 10초 타임아웃
+  var timer=setTimeout(function(){
+    showAuthErr('연결 시간이 초과됐습니다. Firebase Database가 생성되어 있는지 확인해주세요.');
+    setAuthLoading(false);
+  }, 10000);
+
+  db.ref('users/'+name).once('value').then(function(snap){
+    clearTimeout(timer);
+    var userData=snap.val();
+    if(authMode==='register'){
+      var pw2=document.getElementById('auth-pw2').value.trim();
+      if(pw!==pw2){showAuthErr('비밀번호가 일치하지 않습니다.');setAuthLoading(false);return;}
+      if(userData){showAuthErr('이미 존재하는 이름입니다.');setAuthLoading(false);return;}
+      db.ref('users/'+name).set({pw:pw,createdAt:Date.now()}).then(function(){
+        loginUser(name);
+      }).catch(function(e){
+        showAuthErr('저장 실패: '+e.message);
+        setAuthLoading(false);
+      });
+    } else {
+      if(!userData){showAuthErr('등록되지 않은 이름입니다.');setAuthLoading(false);return;}
+      if(userData.pw!==pw){showAuthErr('비밀번호가 올바르지 않습니다.');setAuthLoading(false);return;}
+      loginUser(name);
+    }
+  }).catch(function(e){
+    clearTimeout(timer);
+    var msg=e.message||'';
+    if(msg.indexOf('permission')>-1||msg.indexOf('PERMISSION')>-1){
+      showAuthErr('Firebase 보안 규칙 오류입니다. Rules를 테스트 모드로 설정해주세요.');
+    } else if(msg.indexOf('network')>-1||msg.indexOf('fetch')>-1){
+      showAuthErr('네트워크 연결을 확인해주세요.');
+    } else {
+      showAuthErr('오류: '+msg);
+    }
+    setAuthLoading(false);
+  });
+}
+
+function loginUser(name){
+  currentUser=name;
+  // Firebase에서 암송 상태 불러오기
+  db.ref('statuses/'+name).once('value').then(function(snap){
+    userStatuses=snap.val()||{};
+    localStorage.setItem('bm_last_user', name);
+    document.getElementById('auth-overlay').style.display='none';
+    document.getElementById('user-bar').style.display='flex';
+    document.getElementById('user-avatar').textContent=name.charAt(0);
+    document.getElementById('user-name-display').textContent=name;
+    setAuthLoading(false);
+    // 실시간 변경 감지 (다른 기기에서 변경 시 자동 반영)
+    db.ref('statuses/'+name).on('value', function(snap){
+      userStatuses=snap.val()||{};
+      updateUserStats();
+      renderAll();renderCategory();
+    });
+    updateUserStats();
+    renderAll();renderCategory();renderFlash();
+  });
+}
+
+function logout(){
+  if(currentUser){
+    db.ref('statuses/'+currentUser).off(); // 실시간 리스너 해제
+  }
+  currentUser=null;userStatuses={};
+  stopAll();
+  document.getElementById('auth-overlay').style.display='flex';
+  document.getElementById('user-bar').style.display='none';
+  document.getElementById('auth-name').value='';
+  document.getElementById('auth-pw').value='';
+  document.getElementById('auth-pw2').value='';
+  document.getElementById('auth-err').style.display='none';
+}
+
+function updateUserStats(){
+  var vals=Object.values(userStatuses);
+  var mem=vals.filter(function(s){return s==='memorizing';}).length;
+  var done=vals.filter(function(s){return s==='done';}).length;
+  document.getElementById('user-stats').textContent='암송 중 '+mem+' · 완료 '+done;
+  renderProgressSummary();
+}
+
+function renderProgressSummary(){
+  var vals=Object.values(userStatuses);
+  var mem=vals.filter(function(s){return s==='memorizing';}).length;
+  var done=vals.filter(function(s){return s==='done';}).length;
+  var el=document.getElementById('progress-summary');
+  if(el) el.innerHTML=
+    '<div class="stat-card"><div class="stat-num">'+(64-mem-done)+'</div><div class="stat-label">미시작</div></div>'
+    +'<div class="stat-card"><div class="stat-num" style="color:#378ADD">'+mem+'</div><div class="stat-label">암송 중</div></div>'
+    +'<div class="stat-card"><div class="stat-num" style="color:#639922">'+done+'</div><div class="stat-label">암송 완료</div></div>';
+}
+
+function setStatus(idx,status){
+  if(!currentUser)return;
+  var newStatuses=Object.assign({},userStatuses);
+  if(newStatuses[idx]===status) delete newStatuses[idx];
+  else newStatuses[idx]=status;
+  // Firebase에 저장 (즉시 반영, 실시간 리스너가 UI 업데이트)
+  db.ref('statuses/'+currentUser).set(newStatuses);
+}
+
+// 마지막 로그인 사용자 자동 입력
+window.addEventListener('DOMContentLoaded',function(){
+  var last=localStorage.getItem('bm_last_user');
+  if(last) document.getElementById('auth-name').value=last;
+});
+
+function getStatusClass(idx){
+  if(!userStatuses)return '';
+  var s=userStatuses[idx];
+  if(s==='memorizing')return ' status-memorizing';
+  if(s==='done')return ' status-done';
+  return '';
+}
+function getStatusPip(idx){
+  if(!userStatuses)return '';
+  var s=userStatuses[idx];
+  if(s==='memorizing')return '<span class="status-pip pip-memorizing"></span>';
+  if(s==='done')return '<span class="status-pip pip-done"></span>';
+  return '';
+}
+function memBtnHTML(idx){
+  var s=userStatuses[idx];
+  var cls='mem-btn'+(s?' status-'+s:'');
+  var icon=s==='done'
+    ?'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 6l3 3 5-5" stroke="#639922" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    :s==='memorizing'
+    ?'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M6 2v4l2.5 2.5" stroke="#378ADD" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="6" cy="6" r="5" stroke="#378ADD" stroke-width="1.2" fill="none"/></svg>'
+    :'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 6l3 3 5-5" stroke="#bbb" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  return '<div class="'+cls+'" style="position:relative">'+icon
+    +'<div class="mem-tooltip">'
+    +'<div class="mem-option" onclick="event.stopPropagation();setStatus('+idx+',\'memorizing\')">'
+    +'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M6 2v4l2.5 2.5" stroke="#378ADD" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="6" cy="6" r="5" stroke="#378ADD" stroke-width="1.2" fill="none"/></svg>'
+    +'암송 중</div>'
+    +'<div class="mem-option" onclick="event.stopPropagation();setStatus('+idx+',\'done\')">'
+    +'<svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 6l3 3 5-5" stroke="#639922" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    +'암송 완료</div>'
+    +'</div></div>';
+}
+
+</script>
+
+<div id="auth-overlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-title" id="auth-title">로그인</div>
+    <div class="auth-sub" id="auth-sub">이름과 비밀번호 4자리를 입력하세요</div>
+    <div class="auth-err" id="auth-err"></div>
+    <label class="auth-label">이름</label>
+    <input class="auth-input" id="auth-name" type="text" placeholder="이름 입력" maxlength="20">
+    <label class="auth-label">비밀번호 (4자리 숫자)</label>
+    <input class="auth-input" id="auth-pw" type="password" placeholder="4자리 숫자" maxlength="4" inputmode="numeric" onkeydown="if(event.key==='Enter')doAuth()">
+    <div id="auth-pw2-wrap" style="display:none">
+      <label class="auth-label">비밀번호 확인</label>
+      <input class="auth-input" id="auth-pw2" type="password" placeholder="4자리 숫자 재입력" maxlength="4" inputmode="numeric">
+    </div>
+    <button class="auth-btn primary" onclick="doAuth()" id="auth-submit-btn">로그인</button>
+    <div id="auth-loading" style="text-align:center;font-size:12px;color:#888;display:none;margin-top:4px">Firebase에 연결 중...</div>
+    <div class="auth-toggle" id="auth-toggle">계정이 없으신가요? <span onclick="toggleAuthMode()">가입하기</span></div>
+  </div>
+</div>
+
+</body>
+</html>
